@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "VivSpriteImporter",
+	"Description": "Imports Viv Sprites",
+	"Category": "Other",
+	"CreatedBy": "Taylor",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "VivSpriteImporter",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	]
+}
