@@ -24,11 +24,11 @@ VivSpriteParser::~VivSpriteParser() {
 }
 
 bool VivSpriteParser::importVivSprite() {
-	//Find the file
-	if (!FPaths::FileExists(FilePath)) {
-		UE_LOG(LogTemp, Error, TEXT("No file found at: %s, aborting import"), *FilePath);
-		return false;
-	}
+	//Find the file - disabled until we switch to zip files
+	//if (!FPaths::FileExists(FilePath)) {
+	//	UE_LOG(LogTemp, Error, TEXT("No file found at: %s, aborting import"), *FilePath);
+	//	return false;
+	//}
 	//Unzip the file
 	bool unzipSuccess = UnzipFile();
 	if (!unzipSuccess) {
@@ -120,7 +120,6 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 		if (Subfolder.Len() == 0) {
 			Subfolder = ResourceName;
 		}
-
 		TArray<TSharedPtr<FJsonValue>> imageSettings = jsonObj->GetArrayField("images");
 		for (int32 i = 0; i < imageSettings.Num(); i++) {
 			SpriteSheetData data;
