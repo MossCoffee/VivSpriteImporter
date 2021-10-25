@@ -13,7 +13,7 @@ VivSpriteParser::VivSpriteParser(FString _FilePath)
 	: FilePath(_FilePath)
 	, ResourceName()
 	, Subfolder()
-	, NumSpriteSheets()
+	, NumSpriteSheets(0)
 	, imageData() {
 	importVivSprite();
 }
@@ -120,7 +120,7 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 		if (Subfolder.Len() == 0) {
 			Subfolder = ResourceName;
 		}
-		NumSpriteSheets = jsonObj->GetNumberField("numImages");
+
 		TArray<TSharedPtr<FJsonValue>> imageSettings = jsonObj->GetArrayField("images");
 		for (int32 i = 0; i < imageSettings.Num(); i++) {
 			SpriteSheetData data;
@@ -128,6 +128,7 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 			data.name = arrayObj->GetStringField("name");
 			data.settings = arrayObj->GetArrayField("settings");
 			imageData.push_back(data);
+			NumSpriteSheets++;
 		}
 
 	}
