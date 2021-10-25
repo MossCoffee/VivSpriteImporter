@@ -25,17 +25,19 @@ public:
 	virtual ~VivSpriteParser();
 
 private:
-	std::vector<std::string> GetImageInitalizationData(FString* JsonData);
-	void SetTextureSettings(UTexture2D* texture, TArray<TSharedPtr<FJsonValue>> JsonData);
-	UTexture2D* ImportFileAsTexture2D(const FString& Filename, UPackage* destination, FString* textureName);
-	UTexture2D* ImportBufferAsTexture2D(const TArray<uint8>& Buffer, UPackage* destination, FString* textureName);
-	void ParseJSONFile(FString filePath);
+	bool UnzipFile();
+	void SetTextureSettings(UTexture2D* texture, TArray<TSharedPtr<FJsonValue>>& JsonData);
+	UTexture2D* ImportFileAsTexture2D(const FString& Filename, UPackage* destination, FString& textureName);
+	UTexture2D* ImportBufferAsTexture2D(const TArray<uint8>& Buffer, UPackage* destination, FString& textureName);
+	bool ParseJSONFile(FString filePath);
 	bool importVivSprite();
-	UTexture2D* CreateTexture(FString* textureName, FString* texturePath);
+	UTexture2D* CreateTexture(FString textureName);
+	bool createFlipbooks();
 
 	const FString JsonFileName = "settings.json";
 	FString FilePath;
 	FString ResourceName;
+	FString Subfolder;
 	int NumSpriteSheets;
 	std::vector<SpriteSheetData> imageData;
 

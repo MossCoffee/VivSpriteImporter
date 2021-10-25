@@ -12,6 +12,7 @@
 VivSpriteParser::VivSpriteParser(FString _FilePath) 
 	: FilePath(_FilePath)
 	, ResourceName()
+	, Subfolder()
 	, NumSpriteSheets()
 	, imageData() {
 	importVivSprite();
@@ -23,47 +24,75 @@ VivSpriteParser::~VivSpriteParser() {
 }
 
 bool VivSpriteParser::importVivSprite() {
-	//temp test shit
-
-
 	//Find the file
-
+	if (!FPaths::FileExists(FilePath)) {
+		UE_LOG(LogTemp, Error, TEXT("No file found at: %s, aborting import"), *FilePath);
+		return false;
+	}
 	//Unzip the file
+	bool unzipSuccess = UnzipFile();
+	if (!unzipSuccess) {
+		UE_LOG(LogTemp, Error, TEXT("Error unzipping, aborting import"), *FilePath);
+		return false;
+	}
 
 	//add files to unreal engine (with settings)
-	//std::string testString = "test";
 	FString jsonPath = FilePath + "\\" + JsonFileName;
-	ParseJSONFile(jsonPath);
-	UE_LOG(LogTemp, Warning, TEXT("Resource name: %s"), *ResourceName);
-	UE_LOG(LogTemp, Warning, TEXT("Num Images: %d"), NumSpriteSheets);
-	for (SpriteSheetData d : imageData) {
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *d.name);
+	bool ParseSuccess = ParseJSONFile(jsonPath);
+	if (!ParseSuccess) {
+		return false;
 	}
-	//parser.CreateTexture(testString, filePath);
+	
+	for (SpriteSheetData& data : imageData) {
+		data.texture = CreateTexture(data.name);
+		if (data.texture != nullptr) {
+			SetTextureSettings(data.texture, data.settings);
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("Error creating texture %s, aborting import"), *data.name);
+			return false;
+		}
+	}
 
 	//Set up flip books
+	bool flipbookSuccess = createFlipbooks();
+	if (!flipbookSuccess) {
+		UE_LOG(LogTemp, Error, TEXT("Error creating flipbooks, aborting import"));
+		return false;
+	}
 
-	return false;
+	return true;
 }
 
-std::vector<std::string> VivSpriteParser::GetImageInitalizationData(FString* JsonData) {
-	return std::vector<std::string>();
+bool VivSpriteParser::UnzipFile() {
+	//Always returns success because it's not currently implemented
+	return true;
 }
 
-void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TArray<TSharedPtr<FJsonValue>> JsonData) {
+bool VivSpriteParser::createFlipbooks() {
+	//Always returns success because they aren't currently implemented
+	return true;
+}
+
+void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TArray<TSharedPtr<FJsonValue>>& JsonData) {
+	//No op because it needs to be implemented
 	return;
 }
 
 
-UTexture2D* VivSpriteParser::CreateTexture(FString* textureName, FString* texturePath) {
-	FString FileName = *texturePath + *textureName + ".png";
-
-	FString PackageName = TEXT("/Game/SpriteSheets/");
-	PackageName += *ResourceName + *textureName;
+UTexture2D* VivSpriteParser::CreateTexture(FString textureName) {
+	FString FileName = FilePath + "\\" + textureName + ".png";
+	if (!FPaths::FileExists(FileName)) {
+		UE_LOG(LogTemp, Error, TEXT("No file found at: %s"), *FileName);
+		return nullptr;
+	}
+	FString PackageName = TEXT("/Game/SpriteSheets/") + Subfolder + TEXT("/");
+	FString FullTextureName = ResourceName + TEXT("_") + textureName;
+	PackageName += FullTextureName;
 	UPackage* Package = CreatePackage(*PackageName);
 	Package->FullyLoad();
 
-	UTexture2D* newTexture = ImportFileAsTexture2D(FileName, Package, textureName);
+	UTexture2D* newTexture = ImportFileAsTexture2D(FileName, Package, FullTextureName);
 
 	newTexture->SetExternalPackage(Package);
 
@@ -74,9 +103,11 @@ UTexture2D* VivSpriteParser::CreateTexture(FString* textureName, FString* textur
 }
 
 
-
-
-void VivSpriteParser::ParseJSONFile(FString filePath) {
+bool VivSpriteParser::ParseJSONFile(FString filePath) {
+	if (!FPaths::FileExists(filePath)) {
+		UE_LOG(LogTemp, Error, TEXT("No file found at: %s"), *filePath);
+		return false;
+	}
 	FString JsonBlob;
 	FFileHelper::LoadFileToString(JsonBlob, *filePath);
 
@@ -85,6 +116,7 @@ void VivSpriteParser::ParseJSONFile(FString filePath) {
 
 	if (FJsonSerializer::Deserialize(reader, jsonObj) && jsonObj.IsValid()) {
 		ResourceName = jsonObj->GetStringField("name");
+		Subfolder = jsonObj->GetStringField("subfolder");
 		NumSpriteSheets = jsonObj->GetNumberField("numImages");
 		TArray<TSharedPtr<FJsonValue>> imageSettings = jsonObj->GetArrayField("images");
 		for (int32 i = 0; i < imageSettings.Num(); i++) {
@@ -96,9 +128,10 @@ void VivSpriteParser::ParseJSONFile(FString filePath) {
 		}
 
 	}
+	return true;
 }
 
-UTexture2D* VivSpriteParser::ImportFileAsTexture2D(const FString& Filename, UPackage* destination, FString* textureName) {
+UTexture2D* VivSpriteParser::ImportFileAsTexture2D(const FString& Filename, UPackage* destination, FString& textureName) {
 	IImageWrapperModule& ImageWrapperModule = FModuleManager::Get().LoadModuleChecked<IImageWrapperModule>(TEXT("ImageWrapper"));
 
 	UTexture2D* NewTexture = nullptr;
@@ -127,7 +160,7 @@ UTexture2D* VivSpriteParser::ImportFileAsTexture2D(const FString& Filename, UPac
 	return NewTexture;
 }
 
-UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer, UPackage* destination, FString* textureName) {
+UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer, UPackage* destination, FString& textureName) {
 	IImageWrapperModule& ImageWrapperModule = FModuleManager::Get().LoadModuleChecked<IImageWrapperModule>(TEXT("ImageWrapper"));
 	EImageFormat Format = ImageWrapperModule.DetectImageFormat(Buffer.GetData(), Buffer.GetAllocatedSize());
 
@@ -172,7 +205,7 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 			TArray64<uint8> UncompressedData;
 			bool result = ImageWrapper->GetRaw(RGBFormat, BitDepth, UncompressedData);
 
-			FName TextureName = FName(*textureName);
+			FName TextureName = FName(textureName);
 			NewTexture = NewObject<UTexture2D>(destination, TextureName, RF_Public | RF_Standalone | RF_MarkAsRootSet);
 
 			NewTexture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
