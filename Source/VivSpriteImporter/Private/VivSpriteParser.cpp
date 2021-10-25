@@ -117,6 +117,9 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 	if (FJsonSerializer::Deserialize(reader, jsonObj) && jsonObj.IsValid()) {
 		ResourceName = jsonObj->GetStringField("name");
 		Subfolder = jsonObj->GetStringField("subfolder");
+		if (Subfolder.Len() == 0) {
+			Subfolder = ResourceName;
+		}
 		NumSpriteSheets = jsonObj->GetNumberField("numImages");
 		TArray<TSharedPtr<FJsonValue>> imageSettings = jsonObj->GetArrayField("images");
 		for (int32 i = 0; i < imageSettings.Num(); i++) {
