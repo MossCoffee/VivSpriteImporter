@@ -115,8 +115,9 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 	TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(JsonBlob);
 
 	if (FJsonSerializer::Deserialize(reader, jsonObj) && jsonObj.IsValid()) {
-		ResourceName = jsonObj->GetStringField("name");
-		Subfolder = jsonObj->GetStringField("subfolder");
+		ResourceName = jsonObj->HasField("name") ? jsonObj->GetStringField("name") : TEXT("default_path");
+		
+		Subfolder = jsonObj->HasField("subfolder") ? jsonObj->GetStringField("subfolder") : ResourceName;
 		if (Subfolder.Len() == 0) {
 			Subfolder = ResourceName;
 		}
