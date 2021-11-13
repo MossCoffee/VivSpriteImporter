@@ -31,7 +31,7 @@ private:
 	UTexture2D* ImportBufferAsTexture2D(const TArray<uint8>& Buffer, UPackage* destination, FString& textureName);
 	bool ParseJSONFile(FString filePath);
 	bool importVivSprite();
-	UTexture2D* CreateTexture(FString textureName);
+	UTexture2D* CreateTexture(FString textureName, TArray<TSharedPtr<FJsonValue>>& textureSettings);
 	bool createFlipbooks();
 
 	const FString JsonFileName = "settings.json";

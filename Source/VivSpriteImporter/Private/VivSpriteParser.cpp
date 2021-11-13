@@ -2,6 +2,9 @@
 
 #include "AssetRegistry/AssetRegistryModule.h"
 
+//#include "TextureCompressorModule.h"
+#include "Engine/Texture.h"
+
 #include "ImageUtils.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
@@ -44,11 +47,8 @@ bool VivSpriteParser::importVivSprite() {
 	}
 	
 	for (SpriteSheetData& data : imageData) {
-		data.texture = CreateTexture(data.name);
-		if (data.texture != nullptr) {
-			SetTextureSettings(data.texture, data.settings);
-		}
-		else {
+		data.texture = CreateTexture(data.name, data.settings);
+		if (data.texture == nullptr) {
 			UE_LOG(LogTemp, Error, TEXT("Error creating texture %s, aborting import"), *data.name);
 			return false;
 		}
@@ -75,12 +75,23 @@ bool VivSpriteParser::createFlipbooks() {
 }
 
 void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TArray<TSharedPtr<FJsonValue>>& JsonData) {
-	//No op because it needs to be implemented
+	//MipGenSettings
+	//Texture Group
+	//Downscale
+	//Compression Settings
+	texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
+	//Compress w/o alpha
+	texture->CompressionNoAlpha = 1;
+	//sRGB
+	texture->SRGB = 0;
+	//Filter
+	texture->Filter = TextureFilter::TF_Default;
+
 	return;
 }
 
 
-UTexture2D* VivSpriteParser::CreateTexture(FString textureName) {
+UTexture2D* VivSpriteParser::CreateTexture(FString textureName, TArray<TSharedPtr<FJsonValue>>& textureSettings) {
 	FString FileName = FilePath + "\\" + textureName + ".png";
 	if (!FPaths::FileExists(FileName)) {
 		UE_LOG(LogTemp, Error, TEXT("No file found at: %s"), *FileName);
@@ -93,6 +104,8 @@ UTexture2D* VivSpriteParser::CreateTexture(FString textureName) {
 	Package->FullyLoad();
 
 	UTexture2D* newTexture = ImportFileAsTexture2D(FileName, Package, FullTextureName);
+
+	SetTextureSettings(newTexture, textureSettings);
 
 	newTexture->SetExternalPackage(Package);
 
@@ -142,12 +155,12 @@ UTexture2D* VivSpriteParser::ImportFileAsTexture2D(const FString& Filename, UPac
 	TArray<uint8> Buffer;
 	if (FFileHelper::LoadFileToArray(Buffer, *Filename))
 	{
-		EPixelFormat PixelFormat = PF_Unknown;
+		//EPixelFormat PixelFormat = PF_Unknown;
 
-		uint8* RawData = nullptr;
-		int32 BitDepth = 0;
-		int32 Width = 0;
-		int32 Height = 0;
+		//uint8* RawData = nullptr;
+		//int32 BitDepth = 0;
+		//int32 Width = 0;
+		//int32 Height = 0;
 
 		NewTexture = ImportBufferAsTexture2D(Buffer, destination, textureName);
 
