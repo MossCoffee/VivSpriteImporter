@@ -2,7 +2,7 @@
 
 #include "AssetRegistry/AssetRegistryModule.h"
 
-//#include "TextureCompressorModule.h"
+#include "TextureCompressorModule.h"
 #include "Engine/Texture.h"
 
 #include "ImageUtils.h"
@@ -106,6 +106,8 @@ UTexture2D* VivSpriteParser::CreateTexture(FString textureName, TArray<TSharedPt
 	UTexture2D* newTexture = ImportFileAsTexture2D(FileName, Package, FullTextureName);
 
 	SetTextureSettings(newTexture, textureSettings);
+
+	FCompressedImage2D tex;
 
 	newTexture->SetExternalPackage(Package);
 

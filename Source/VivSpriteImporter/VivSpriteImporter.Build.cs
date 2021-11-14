@@ -43,6 +43,7 @@ public class VivSpriteImporter : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"TextureCompressor"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
