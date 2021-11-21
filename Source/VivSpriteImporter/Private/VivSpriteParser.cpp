@@ -150,7 +150,7 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 	return true;
 }
 
-FCompressedImage2D VivSpriteParser::RunImagePreprocessor(const TArray<uint8>& Buffer, int32 Width, int32 Height) {
+FCompressedImage2D VivSpriteParser::RunImagePreprocessor(const TArray64<uint8>& Buffer, int32 Width, int32 Height) {
 	//Create an FImage
 	TArray<FImage> source = {FImage(Width, Height, ERawImageFormat::Type::BGRA8, EGammaSpace::Linear)};
 	TArray<FImage> normals;
@@ -220,11 +220,6 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 			Width = ImageWrapper->GetWidth();
 			Height = ImageWrapper->GetHeight();
 
-			/*if (BitDepth == 16)
-			{
-				PixelFormat = PF_FloatRGBA;
-				RGBFormat = ERGBFormat::BGRA;
-			}*/
 			if (BitDepth == 8)
 			{
 				PixelFormat = PF_B8G8R8A8;
@@ -239,7 +234,7 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 			TArray64<uint8> UncompressedData;
 			bool result = ImageWrapper->GetRaw(RGBFormat, BitDepth, UncompressedData);
 
-			FCompressedImage2D ProcessedTexture = RunImagePreprocessor(Buffer, Width, Height);
+			FCompressedImage2D ProcessedTexture = RunImagePreprocessor(UncompressedData, Width, Height);
 
 			FName TextureName = FName(textureName);
 			NewTexture = NewObject<UTexture2D>(destination, TextureName, RF_Public | RF_Standalone | RF_MarkAsRootSet);
