@@ -2,9 +2,11 @@
 
 #include "AssetRegistry/AssetRegistryModule.h"
 
+#include "Modules/ModuleManager.h"
 #include "TextureCompressorModule.h"
 #include "Engine/Texture.h"
 
+#include "ImageCore.h"
 #include "ImageUtils.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
@@ -107,8 +109,6 @@ UTexture2D* VivSpriteParser::CreateTexture(FString textureName, TArray<TSharedPt
 
 	SetTextureSettings(newTexture, textureSettings);
 
-	FCompressedImage2D tex;
-
 	newTexture->SetExternalPackage(Package);
 
 	FString PackageFileName = FPackageName::LongPackageNameToFilename(PackageName, FPackageName::GetAssetPackageExtension());
@@ -150,6 +150,27 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 	return true;
 }
 
+FCompressedImage2D VivSpriteParser::RunImagePreprocessor(const TArray<uint8>& Buffer, int32 Width, int32 Height) {
+	//Create an FImage
+	TArray<FImage> source = {FImage(Width, Height, ERawImageFormat::Type::BGRA8, EGammaSpace::Linear)};
+	TArray<FImage> normals;
+	
+
+	ITextureCompressorModule* compressor = &FModuleManager::LoadModuleChecked<ITextureCompressorModule>(TEXTURE_COMPRESSOR_MODULENAME);
+	//Create & set Build Settings
+	FTextureBuildSettings settings;
+	//Create an out array
+	TArray<FCompressedImage2D> output;
+	//call build texture
+	uint32 mipsInTail = 0;
+	uint32 ExtData = 0;
+	compressor->BuildTexture(source, normals, settings, output, mipsInTail, ExtData);
+
+	return output[0]; 
+
+}
+
+
 UTexture2D* VivSpriteParser::ImportFileAsTexture2D(const FString& Filename, UPackage* destination, FString& textureName) {
 	IImageWrapperModule& ImageWrapperModule = FModuleManager::Get().LoadModuleChecked<IImageWrapperModule>(TEXT("ImageWrapper"));
 
@@ -157,13 +178,7 @@ UTexture2D* VivSpriteParser::ImportFileAsTexture2D(const FString& Filename, UPac
 	TArray<uint8> Buffer;
 	if (FFileHelper::LoadFileToArray(Buffer, *Filename))
 	{
-		//EPixelFormat PixelFormat = PF_Unknown;
-
-		//uint8* RawData = nullptr;
-		//int32 BitDepth = 0;
-		//int32 Width = 0;
-		//int32 Height = 0;
-
+		//Run Compression Settings here
 		NewTexture = ImportBufferAsTexture2D(Buffer, destination, textureName);
 
 		if (!NewTexture)
@@ -205,12 +220,12 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 			Width = ImageWrapper->GetWidth();
 			Height = ImageWrapper->GetHeight();
 
-			if (BitDepth == 16)
+			/*if (BitDepth == 16)
 			{
 				PixelFormat = PF_FloatRGBA;
 				RGBFormat = ERGBFormat::BGRA;
-			}
-			else if (BitDepth == 8)
+			}*/
+			if (BitDepth == 8)
 			{
 				PixelFormat = PF_B8G8R8A8;
 				RGBFormat = ERGBFormat::BGRA;
@@ -223,6 +238,8 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 
 			TArray64<uint8> UncompressedData;
 			bool result = ImageWrapper->GetRaw(RGBFormat, BitDepth, UncompressedData);
+
+			FCompressedImage2D ProcessedTexture = RunImagePreprocessor(Buffer, Width, Height);
 
 			FName TextureName = FName(textureName);
 			NewTexture = NewObject<UTexture2D>(destination, TextureName, RF_Public | RF_Standalone | RF_MarkAsRootSet);
@@ -240,11 +257,10 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 			{
 				uint8* MipData = static_cast<uint8*>(NewTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE));
 
-				// Bulk data was already allocated for the correct size when we called CreateTransient above
-				FMemory::Memcpy(MipData, UncompressedData.GetData(), NewTexture->PlatformData->Mips[0].BulkData.GetBulkDataSize());
+				FMemory::Memcpy(MipData, ProcessedTexture.RawData.GetData(), NewTexture->PlatformData->Mips[0].BulkData.GetBulkDataSize());
 				NewTexture->PlatformData->Mips[0].BulkData.Unlock();
 
-				NewTexture->Source.Init(Width, Height, 1, 1, ETextureSourceFormat::TSF_BGRA8, UncompressedData.GetData());
+				NewTexture->Source.Init(Width, Height, 1, 1, ETextureSourceFormat::TSF_BGRA8, ProcessedTexture.RawData.GetData());
 				NewTexture->UpdateResource();
 				destination->MarkPackageDirty();
 				FAssetRegistryModule::AssetCreated(NewTexture);

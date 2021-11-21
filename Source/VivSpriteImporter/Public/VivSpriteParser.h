@@ -13,6 +13,8 @@
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonReader.h"
 
+struct FCompressedImage2D;
+
 struct SpriteSheetData {
 	FString name;
 	TArray<TSharedPtr<FJsonValue>> settings;
@@ -27,6 +29,7 @@ public:
 private:
 	bool UnzipFile();
 	void SetTextureSettings(UTexture2D* texture, TArray<TSharedPtr<FJsonValue>>& JsonData);
+	FCompressedImage2D RunImagePreprocessor(const TArray<uint8>& Buffer, int32 Width, int32 Height);
 	UTexture2D* ImportFileAsTexture2D(const FString& Filename, UPackage* destination, FString& textureName);
 	UTexture2D* ImportBufferAsTexture2D(const TArray<uint8>& Buffer, UPackage* destination, FString& textureName);
 	bool ParseJSONFile(FString filePath);
