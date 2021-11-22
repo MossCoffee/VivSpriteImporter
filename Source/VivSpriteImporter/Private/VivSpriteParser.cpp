@@ -2,11 +2,8 @@
 
 #include "AssetRegistry/AssetRegistryModule.h"
 
-#include "Modules/ModuleManager.h"
-#include "TextureCompressorModule.h"
 #include "Engine/Texture.h"
 
-#include "ImageCore.h"
 #include "ImageUtils.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
@@ -29,6 +26,7 @@ VivSpriteParser::~VivSpriteParser() {
 }
 
 bool VivSpriteParser::importVivSprite() {
+	UE_LOG(LogTemp, Error, TEXT("Importing Viv Sprite"));
 	//Find the file - disabled until we switch to zip files
 	//if (!FPaths::FileExists(FilePath)) {
 	//	UE_LOG(LogTemp, Error, TEXT("No file found at: %s, aborting import"), *FilePath);
@@ -40,14 +38,15 @@ bool VivSpriteParser::importVivSprite() {
 		UE_LOG(LogTemp, Error, TEXT("Error unzipping, aborting import"), *FilePath);
 		return false;
 	}
-
+	UE_LOG(LogTemp, Error, TEXT("past unzip"));
 	//add files to unreal engine (with settings)
 	FString jsonPath = FilePath + "\\" + JsonFileName;
 	bool ParseSuccess = ParseJSONFile(jsonPath);
 	if (!ParseSuccess) {
+		UE_LOG(LogTemp, Error, TEXT("Parsing Json Data Failed, aborting import"));
 		return false;
 	}
-	
+	UE_LOG(LogTemp, Error, TEXT("past parse json"));
 	for (SpriteSheetData& data : imageData) {
 		data.texture = CreateTexture(data.name, data.settings);
 		if (data.texture == nullptr) {
@@ -55,14 +54,14 @@ bool VivSpriteParser::importVivSprite() {
 			return false;
 		}
 	}
-
+	UE_LOG(LogTemp, Error, TEXT("past create texture"));
 	//Set up flip books
 	bool flipbookSuccess = createFlipbooks();
 	if (!flipbookSuccess) {
 		UE_LOG(LogTemp, Error, TEXT("Error creating flipbooks, aborting import"));
 		return false;
 	}
-
+	UE_LOG(LogTemp, Error, TEXT("Job Done!"));
 	return true;
 }
 
@@ -77,9 +76,15 @@ bool VivSpriteParser::createFlipbooks() {
 }
 
 void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TArray<TSharedPtr<FJsonValue>>& JsonData) {
+	
+	//const TSharedPtr<FJsonObject> settingsObj = JsonData[0]->AsObject();
+
 	//MipGenSettings
+	// It's always no mips
 	//Texture Group
+	texture->LODGroup = TextureGroup::TEXTUREGROUP_Character;
 	//Downscale
+	texture->Downscale = 2;
 	//Compression Settings
 	texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
 	//Compress w/o alpha
@@ -88,7 +93,6 @@ void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TArray<TSharedPtr<
 	texture->SRGB = 0;
 	//Filter
 	texture->Filter = TextureFilter::TF_Default;
-
 	return;
 }
 
@@ -150,27 +154,6 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 	return true;
 }
 
-FCompressedImage2D VivSpriteParser::RunImagePreprocessor(const TArray64<uint8>& Buffer, int32 Width, int32 Height) {
-	//Create an FImage
-	TArray<FImage> source = {FImage(Width, Height, ERawImageFormat::Type::BGRA8, EGammaSpace::Linear)};
-	TArray<FImage> normals;
-	
-
-	ITextureCompressorModule* compressor = &FModuleManager::LoadModuleChecked<ITextureCompressorModule>(TEXTURE_COMPRESSOR_MODULENAME);
-	//Create & set Build Settings
-	FTextureBuildSettings settings;
-	//Create an out array
-	TArray<FCompressedImage2D> output;
-	//call build texture
-	uint32 mipsInTail = 0;
-	uint32 ExtData = 0;
-	compressor->BuildTexture(source, normals, settings, output, mipsInTail, ExtData);
-
-	return output[0]; 
-
-}
-
-
 UTexture2D* VivSpriteParser::ImportFileAsTexture2D(const FString& Filename, UPackage* destination, FString& textureName) {
 	IImageWrapperModule& ImageWrapperModule = FModuleManager::Get().LoadModuleChecked<IImageWrapperModule>(TEXT("ImageWrapper"));
 
@@ -231,11 +214,9 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 				return nullptr;
 			}
 
-			TArray64<uint8> UncompressedData;
-			bool result = ImageWrapper->GetRaw(RGBFormat, BitDepth, UncompressedData);
-
-			FCompressedImage2D ProcessedTexture = RunImagePreprocessor(UncompressedData, Width, Height);
-
+			TArray64<uint8> Data;
+			bool result = ImageWrapper->GetRaw(RGBFormat, BitDepth, Data);
+			   
 			FName TextureName = FName(textureName);
 			NewTexture = NewObject<UTexture2D>(destination, TextureName, RF_Public | RF_Standalone | RF_MarkAsRootSet);
 
@@ -252,10 +233,10 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 			{
 				uint8* MipData = static_cast<uint8*>(NewTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE));
 
-				FMemory::Memcpy(MipData, ProcessedTexture.RawData.GetData(), NewTexture->PlatformData->Mips[0].BulkData.GetBulkDataSize());
+				FMemory::Memcpy(MipData, Data.GetData(), NewTexture->PlatformData->Mips[0].BulkData.GetBulkDataSize());
 				NewTexture->PlatformData->Mips[0].BulkData.Unlock();
 
-				NewTexture->Source.Init(Width, Height, 1, 1, ETextureSourceFormat::TSF_BGRA8, ProcessedTexture.RawData.GetData());
+				NewTexture->Source.Init(Width, Height, 1, 1, ETextureSourceFormat::TSF_BGRA8, Data.GetData());
 				NewTexture->UpdateResource();
 				destination->MarkPackageDirty();
 				FAssetRegistryModule::AssetCreated(NewTexture);

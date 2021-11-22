@@ -22,7 +22,5 @@
 		}
 	],
 	"PrivateDependencyModuleNames": [
-		"TextureCompressor",
-		"ImageCore"
 	]
 }
