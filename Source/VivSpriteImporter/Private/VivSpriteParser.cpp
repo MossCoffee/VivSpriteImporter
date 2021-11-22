@@ -161,8 +161,8 @@ void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TSharedPtr<FJsonOb
 	//Filter
 	FString TextureFilterString = JsonData->HasField("Filter") ? JsonData->GetStringField("Filter") : TEXT("Nearest");
 	if(TextureFilterString == TEXT("Nearest")) { texture->Filter = TextureFilter::TF_Nearest; }
-	else if(TextureFilterString == TEXT("Bi-linear") || SRGBString == TEXT("Bilinear")) { texture->Filter = TextureFilter::TF_Bilinear; }
-	else if (TextureFilterString == TEXT("Tri-linear") || SRGBString == TEXT("Trilinear")) { texture->Filter = TextureFilter::TF_Trilinear; }
+	else if(TextureFilterString == TEXT("Bi-linear") || TextureFilterString == TEXT("Bilinear")) { texture->Filter = TextureFilter::TF_Bilinear; }
+	else if (TextureFilterString == TEXT("Tri-linear") || TextureFilterString == TEXT("Trilinear")) { texture->Filter = TextureFilter::TF_Trilinear; }
 	else if (TextureFilterString == TEXT("Max")) { texture->Filter = TextureFilter::TF_MAX; }
 	else { texture->Filter = TextureFilter::TF_Default; }
 	return;
