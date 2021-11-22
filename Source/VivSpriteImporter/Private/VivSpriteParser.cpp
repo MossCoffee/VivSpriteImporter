@@ -140,7 +140,7 @@ void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TSharedPtr<FJsonOb
 	if(CompressionString == TEXT("Default")) {texture->CompressionSettings = TextureCompressionSettings::TC_Default				;}	
 	else if(CompressionString == TEXT("NormalMap")) {texture->CompressionSettings = TextureCompressionSettings::TC_Normalmap				;}
 	else if(CompressionString == TEXT("Masks")) {texture->CompressionSettings = TextureCompressionSettings::TC_Masks					;}
-	else if(CompressionString == TEXT("GrayScale")) {texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale				;}
+	else if(CompressionString == TEXT("Grayscale")) {texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale				;}
 	else if(CompressionString == TEXT("Displacementmap")) {texture->CompressionSettings = TextureCompressionSettings::TC_Displacementmap		;}	
 	else if(CompressionString == TEXT("VectorDisplacementmap")) {texture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap	;}
 	else if(CompressionString == TEXT("HDR")) {texture->CompressionSettings = TextureCompressionSettings::TC_HDR					;}	
@@ -159,11 +159,11 @@ void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TSharedPtr<FJsonOb
 	//sRGB
 	texture->SRGB = JsonData->HasField("SRGB") ? JsonData->GetBoolField("SRGB") : false;
 	//Filter
-	FString SRGBString = JsonData->HasField("SRGB") ? JsonData->GetStringField("SRGB") : "Default";
-	if(SRGBString == TEXT("Nearest")) { texture->Filter = TextureFilter::TF_Nearest; }
-	else if(SRGBString == TEXT("Bi-linear") || SRGBString == TEXT("Bilinear")) { texture->Filter = TextureFilter::TF_Bilinear; }
-	else if (SRGBString == TEXT("Tri-linear") || SRGBString == TEXT("Trilinear")) { texture->Filter = TextureFilter::TF_Trilinear; }
-	else if (SRGBString == TEXT("Max")) { texture->Filter = TextureFilter::TF_MAX; }
+	FString TextureFilterString = JsonData->HasField("Filter") ? JsonData->GetStringField("Filter") : TEXT("Nearest");
+	if(TextureFilterString == TEXT("Nearest")) { texture->Filter = TextureFilter::TF_Nearest; }
+	else if(TextureFilterString == TEXT("Bi-linear") || SRGBString == TEXT("Bilinear")) { texture->Filter = TextureFilter::TF_Bilinear; }
+	else if (TextureFilterString == TEXT("Tri-linear") || SRGBString == TEXT("Trilinear")) { texture->Filter = TextureFilter::TF_Trilinear; }
+	else if (TextureFilterString == TEXT("Max")) { texture->Filter = TextureFilter::TF_MAX; }
 	else { texture->Filter = TextureFilter::TF_Default; }
 	return;
 }
