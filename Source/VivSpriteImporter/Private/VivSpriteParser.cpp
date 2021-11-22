@@ -80,17 +80,91 @@ void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TSharedPtr<FJsonOb
 	//MipGenSettings
 	// It's always no mips
 	//Texture Group
-	texture->LODGroup = TextureGroup::TEXTUREGROUP_Character;
+	//texture->LODGroup = TextureGroup::TEXTUREGROUP_Character;
+	FString TextureGroupString = JsonData->HasField("TextureGroup") ? JsonData->GetStringField("TextureGroup") : TEXT("World");
+	if (TextureGroupString == TEXT("World")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_World;}
+	else if (TextureGroupString == TEXT("WorldNormalMap")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_WorldNormalMap;}
+	else if (TextureGroupString == TEXT("WorldSpecular")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_WorldSpecular;}
+	else if (TextureGroupString == TEXT("Character")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Character;}
+	else if (TextureGroupString == TEXT("CharacterNormalMap")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_CharacterNormalMap;}
+	else if (TextureGroupString == TEXT("CharacterSpecular")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_CharacterSpecular;}
+	else if (TextureGroupString == TEXT("Weapon")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Weapon;}
+	else if (TextureGroupString == TEXT("WeaponNormalMap")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_WeaponNormalMap;}
+	else if (TextureGroupString == TEXT("WeaponSpecular")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_WeaponSpecular;}
+	else if (TextureGroupString == TEXT("Vehicle")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Vehicle;}
+	else if (TextureGroupString == TEXT("VehicleNormalMap")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_VehicleNormalMap;}
+	else if (TextureGroupString == TEXT("VehicleSpecular")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_VehicleSpecular;}
+	else if (TextureGroupString == TEXT("Cinematic")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Cinematic;}
+	else if (TextureGroupString == TEXT("Effects")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Effects;}
+	else if (TextureGroupString == TEXT("EffectsNotFiltered")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_EffectsNotFiltered;}
+	else if (TextureGroupString == TEXT("SkyBox")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Skybox;}
+	else if (TextureGroupString == TEXT("UI")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_UI;}
+	else if (TextureGroupString == TEXT("Lightmap")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Lightmap;}
+	else if (TextureGroupString == TEXT("RenderTarget")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_RenderTarget;}
+	else if (TextureGroupString == TEXT("MobileFlattened")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_MobileFlattened;}
+	else if (TextureGroupString == TEXT("ProcBuilding_Face")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_ProcBuilding_Face;}
+	else if (TextureGroupString == TEXT("ProcBuilding_LightMap")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_ProcBuilding_LightMap;}
+	else if (TextureGroupString == TEXT("Shadowmap")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Shadowmap;}
+	else if (TextureGroupString == TEXT("ColorLookupTable")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_ColorLookupTable;}
+	else if (TextureGroupString == TEXT("Terrain_Heightmap")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Terrain_Heightmap;}
+	else if (TextureGroupString == TEXT("Terrain_Weightmap")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Terrain_Weightmap;}
+	else if (TextureGroupString == TEXT("Bokeh")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Bokeh;}
+	else if (TextureGroupString == TEXT("IESLightProfile")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_IESLightProfile;}
+	else if (TextureGroupString == TEXT("Pixels2D")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Pixels2D;}
+	else if (TextureGroupString == TEXT("HierarchicalLOD")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_HierarchicalLOD;}
+	else if (TextureGroupString == TEXT("Impostor")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Impostor;}
+	else if (TextureGroupString == TEXT("ImpostorNormalDepth")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_ImpostorNormalDepth;}
+	else if (TextureGroupString == TEXT("8BitData")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_8BitData;}
+	else if (TextureGroupString == TEXT("16BitData")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_16BitData;}
+	/*else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project01;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project02;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project03;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project04;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project05;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project06;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project07;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project08;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project09 ;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project10 ;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project11 ;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project12 ;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project13;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project14;}
+	else if (TextureGroupString == TEXT("")) {texture->LODGroup = TextureGroup::TEXTUREGROUP_Project15;} will add these if needed*/
+	else {texture->LODGroup = TextureGroup::TEXTUREGROUP_MAX;}
 	//Downscale
 	texture->Downscale = JsonData->HasField("Downscale") ? JsonData->GetNumberField("Downscale") : 1;
 	//Compression Settings
-	texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
+	//texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
+	FString CompressionString = JsonData->HasField("CompressionSettings") ? JsonData->GetStringField("CompressionSettings") : TEXT("Default");
+	if(CompressionString == TEXT("Default")) {texture->CompressionSettings = TextureCompressionSettings::TC_Default				;}	
+	else if(CompressionString == TEXT("NormalMap")) {texture->CompressionSettings = TextureCompressionSettings::TC_Normalmap				;}
+	else if(CompressionString == TEXT("Masks")) {texture->CompressionSettings = TextureCompressionSettings::TC_Masks					;}
+	else if(CompressionString == TEXT("GrayScale")) {texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale				;}
+	else if(CompressionString == TEXT("Displacementmap")) {texture->CompressionSettings = TextureCompressionSettings::TC_Displacementmap		;}	
+	else if(CompressionString == TEXT("VectorDisplacementmap")) {texture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap	;}
+	else if(CompressionString == TEXT("HDR")) {texture->CompressionSettings = TextureCompressionSettings::TC_HDR					;}	
+	else if(CompressionString == TEXT("EditorIcon")) {texture->CompressionSettings = TextureCompressionSettings::TC_EditorIcon			;}	
+	else if(CompressionString == TEXT("Alpha")) {texture->CompressionSettings = TextureCompressionSettings::TC_Alpha					;}
+	else if(CompressionString == TEXT("DistanceFieldFont")) {texture->CompressionSettings = TextureCompressionSettings::TC_DistanceFieldFont		;} 
+	else if(CompressionString == TEXT("HDRCompressed")) {texture->CompressionSettings = TextureCompressionSettings::TC_HDR_Compressed		;}	
+	else if(CompressionString == TEXT("BC7")) {texture->CompressionSettings = TextureCompressionSettings::TC_BC7					;}	
+	else if(CompressionString == TEXT("HalfFloat")) {texture->CompressionSettings = TextureCompressionSettings::TC_HalfFloat				;}
+	else if(CompressionString == TEXT("ReflectionCapture")) {texture->CompressionSettings = TextureCompressionSettings::TC_ReflectionCapture		;}
+	else {texture->CompressionSettings = TextureCompressionSettings::TC_MAX;}
+
+
 	//Compress w/o alpha
 	texture->CompressionNoAlpha = JsonData->HasField("CompressionNoAlpha") ? JsonData->GetBoolField("CompressionNoAlpha") : false;
 	//sRGB
 	texture->SRGB = JsonData->HasField("SRGB") ? JsonData->GetBoolField("SRGB") : false;
 	//Filter
-	texture->Filter = TextureFilter::TF_Default;
+	FString SRGBString = JsonData->HasField("SRGB") ? JsonData->GetStringField("SRGB") : "Default";
+	if(SRGBString == TEXT("Nearest")) { texture->Filter = TextureFilter::TF_Nearest; }
+	else if(SRGBString == TEXT("Bi-linear") || SRGBString == TEXT("Bilinear")) { texture->Filter = TextureFilter::TF_Bilinear; }
+	else if (SRGBString == TEXT("Tri-linear") || SRGBString == TEXT("Trilinear")) { texture->Filter = TextureFilter::TF_Trilinear; }
+	else if (SRGBString == TEXT("Max")) { texture->Filter = TextureFilter::TF_MAX; }
+	else { texture->Filter = TextureFilter::TF_Default; }
 	return;
 }
 
