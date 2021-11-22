@@ -75,29 +75,26 @@ bool VivSpriteParser::createFlipbooks() {
 	return true;
 }
 
-void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TArray<TSharedPtr<FJsonValue>>& JsonData) {
+void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TSharedPtr<FJsonObject>& JsonData) {
 	
-	//const TSharedPtr<FJsonObject> settingsObj = JsonData[0]->AsObject();
-
 	//MipGenSettings
 	// It's always no mips
 	//Texture Group
 	texture->LODGroup = TextureGroup::TEXTUREGROUP_Character;
 	//Downscale
-	texture->Downscale = 2;
+	texture->Downscale = JsonData->HasField("Downscale") ? JsonData->GetNumberField("Downscale") : 1;
 	//Compression Settings
 	texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale;
 	//Compress w/o alpha
-	texture->CompressionNoAlpha = 1;
+	texture->CompressionNoAlpha = JsonData->HasField("CompressionNoAlpha") ? JsonData->GetBoolField("CompressionNoAlpha") : false;
 	//sRGB
-	texture->SRGB = 0;
+	texture->SRGB = JsonData->HasField("SRGB") ? JsonData->GetBoolField("SRGB") : false;
 	//Filter
 	texture->Filter = TextureFilter::TF_Default;
 	return;
 }
 
-
-UTexture2D* VivSpriteParser::CreateTexture(FString textureName, TArray<TSharedPtr<FJsonValue>>& textureSettings) {
+UTexture2D* VivSpriteParser::CreateTexture(FString textureName, TSharedPtr<FJsonObject>& textureSettings) {
 	FString FileName = FilePath + "\\" + textureName + ".png";
 	if (!FPaths::FileExists(FileName)) {
 		UE_LOG(LogTemp, Error, TEXT("No file found at: %s"), *FileName);
@@ -145,7 +142,7 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 			SpriteSheetData data;
 			const TSharedPtr<FJsonObject> arrayObj = imageSettings[i]->AsObject();
 			data.name = arrayObj->GetStringField("name");
-			data.settings = arrayObj->GetArrayField("settings");
+			data.settings = arrayObj->GetObjectField("settings");
 			imageData.push_back(data);
 			NumSpriteSheets++;
 		}

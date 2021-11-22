@@ -15,7 +15,7 @@
 
 struct SpriteSheetData {
 	FString name;
-	TArray<TSharedPtr<FJsonValue>> settings;
+	TSharedPtr<FJsonObject> settings;
 	UTexture2D* texture;
 };
 
@@ -26,12 +26,12 @@ public:
 
 private:
 	bool UnzipFile();
-	void SetTextureSettings(UTexture2D* texture, TArray<TSharedPtr<FJsonValue>>& JsonData);
+	void SetTextureSettings(UTexture2D* texture, TSharedPtr<FJsonObject>& JsonData);
 	UTexture2D* ImportFileAsTexture2D(const FString& Filename, UPackage* destination, FString& textureName);
 	UTexture2D* ImportBufferAsTexture2D(const TArray<uint8>& Buffer, UPackage* destination, FString& textureName);
 	bool ParseJSONFile(FString filePath);
 	bool importVivSprite();
-	UTexture2D* CreateTexture(FString textureName, TArray<TSharedPtr<FJsonValue>>& textureSettings);
+	UTexture2D* CreateTexture(FString textureName, TSharedPtr<FJsonObject>& textureSettings);
 	bool createFlipbooks();
 
 	const FString JsonFileName = "settings.json";
