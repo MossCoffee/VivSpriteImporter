@@ -9,6 +9,8 @@
 #include "Widgets/Text/STextBlock.h"
 #include "ToolMenus.h"
 #include "VivSpriteParser.h"
+#include "IDesktopPlatform.h"
+#include "DesktopPlatformModule.h"
 
 static const FName VivSpriteImporterTabName("VivSpriteImporter");
 
@@ -50,8 +52,11 @@ void FVivSpriteImporterModule::ShutdownModule()
 
 void FVivSpriteImporterModule::PluginButtonClicked()
 {
-	std::string filePath = "C:\\Users\\thefa\\Downloads\\Mobility";
-	VivSpriteParser parser(FString(filePath.c_str()));
+	FString LastFilePath = FString("C:\\");
+	FString FilePath;
+	if(OpenFile(FString("Select Asset"), FString(".vivsprite"), LastFilePath, FilePath)){
+		VivSpriteParser parser(FilePath);
+	}
 
 }
 
@@ -79,6 +84,37 @@ void FVivSpriteImporterModule::RegisterMenus()
 			}
 		}
 	}
+}
+
+bool FVivSpriteImporterModule::OpenFile(const FString& Title, const FString& FileTypes, FString& InOutLastPath, FString& OutOpenFilenames)
+{
+	TSharedPtr<SWidget> empty;
+	IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+	const void* ParentWindow = FSlateApplication::Get().FindBestParentWindowHandleForDialogs(empty);
+	bool bOpened = false;
+	TArray<FString> output;
+
+	bOpened = DesktopPlatform->OpenFileDialog(
+		ParentWindow,
+		Title,
+		InOutLastPath,
+		TEXT(""),
+		FileTypes,
+		EFileDialogFlags::Type::None,
+		output
+	);
+
+	if (output.Num() > 0) {
+		OutOpenFilenames = output[0];
+	}
+
+	if (bOpened)
+	{
+		// User successfully chose a file; remember the path for the next time the dialog opens.
+		InOutLastPath = OutOpenFilenames;
+	}
+
+	return bOpened;
 }
 
 #undef LOCTEXT_NAMESPACE

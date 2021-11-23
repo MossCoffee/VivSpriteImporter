@@ -22,8 +22,7 @@ public:
 private:
 
 	void RegisterMenus();
-
-	//TSharedRef<class SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
+	bool OpenFile(const FString& Title, const FString& FileTypes, FString& InOutLastPath, FString& OutOpenFilenames);
 
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;
