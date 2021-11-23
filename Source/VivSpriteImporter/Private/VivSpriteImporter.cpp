@@ -54,7 +54,7 @@ void FVivSpriteImporterModule::PluginButtonClicked()
 {
 	FString LastFilePath = FString("C:\\");
 	FString FilePath;
-	if(OpenFile(FString("Select Asset"), FString(".vivsprite"), LastFilePath, FilePath)){
+	if(OpenFile(FString("Select Vivsprite to import"), FString(".vivsprite"), LastFilePath, FilePath)){
 		VivSpriteParser parser(FilePath);
 	}
 
