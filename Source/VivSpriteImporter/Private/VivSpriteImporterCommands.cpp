@@ -6,7 +6,7 @@
 
 void FVivSpriteImporterCommands::RegisterCommands()
 {
-	UI_COMMAND(OpenPluginWindow, "VivSpriteImporter", "Bring up VivSpriteImporter window", EUserInterfaceActionType::Button, FInputGesture());
+	UI_COMMAND(PluginAction, "VivSpriteImporter", "Import a VivSprite!", EUserInterfaceActionType::Button, FInputGesture());
 }
 
 #undef LOCTEXT_NAMESPACE

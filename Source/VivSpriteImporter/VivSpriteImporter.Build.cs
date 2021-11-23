@@ -42,7 +42,8 @@ public class VivSpriteImporter : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore"
+				"SlateCore",
+				"DesktopPlatform"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

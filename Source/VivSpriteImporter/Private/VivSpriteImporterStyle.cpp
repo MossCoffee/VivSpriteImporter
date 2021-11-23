@@ -45,7 +45,7 @@ TSharedRef< FSlateStyleSet > FVivSpriteImporterStyle::Create()
 	TSharedRef< FSlateStyleSet > Style = MakeShareable(new FSlateStyleSet("VivSpriteImporterStyle"));
 	Style->SetContentRoot(IPluginManager::Get().FindPlugin("VivSpriteImporter")->GetBaseDir() / TEXT("Resources"));
 
-	Style->Set("VivSpriteImporter.OpenPluginWindow", new IMAGE_BRUSH(TEXT("ButtonIcon_40x"), Icon40x40));
+	Style->Set("VivSpriteImporter.PluginAction", new IMAGE_BRUSH(TEXT("ButtonIcon_40x"), Icon40x40));
 
 	return Style;
 }

@@ -3,12 +3,12 @@
 #include "VivSpriteImporter.h"
 #include "VivSpriteImporterStyle.h"
 #include "VivSpriteImporterCommands.h"
-#include "VivSpriteWidget.h"
 #include "LevelEditor.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"
 #include "ToolMenus.h"
+#include "VivSpriteParser.h"
 
 static const FName VivSpriteImporterTabName("VivSpriteImporter");
 
@@ -26,15 +26,11 @@ void FVivSpriteImporterModule::StartupModule()
 	PluginCommands = MakeShareable(new FUICommandList);
 
 	PluginCommands->MapAction(
-		FVivSpriteImporterCommands::Get().OpenPluginWindow,
+		FVivSpriteImporterCommands::Get().PluginAction,
 		FExecuteAction::CreateRaw(this, &FVivSpriteImporterModule::PluginButtonClicked),
 		FCanExecuteAction());
 
 	UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FVivSpriteImporterModule::RegisterMenus));
-	
-	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(VivSpriteImporterTabName, FOnSpawnTab::CreateRaw(this, &FVivSpriteImporterModule::OnSpawnPluginTab))
-		.SetDisplayName(LOCTEXT("FVivSpriteImporterTabTitle", "VivSpriteImporter"))
-		.SetMenuType(ETabSpawnerMenuType::Hidden);
 }
 
 void FVivSpriteImporterModule::ShutdownModule()
@@ -49,23 +45,16 @@ void FVivSpriteImporterModule::ShutdownModule()
 	FVivSpriteImporterStyle::Shutdown();
 
 	FVivSpriteImporterCommands::Unregister();
-
-	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(VivSpriteImporterTabName);
 }
 
-TSharedRef<SDockTab> FVivSpriteImporterModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)
-{
-	return SNew(SDockTab)
-		.TabRole(ETabRole::NomadTab)
-		[
-			SNew(SVivSpriteImportWidget)
-		];
-}
 
 void FVivSpriteImporterModule::PluginButtonClicked()
 {
-	FGlobalTabmanager::Get()->TryInvokeTab(VivSpriteImporterTabName);
+	std::string filePath = "C:\\Users\\thefa\\Downloads\\Mobility";
+	VivSpriteParser parser(FString(filePath.c_str()));
+
 }
+
 
 void FVivSpriteImporterModule::RegisterMenus()
 {
@@ -76,7 +65,7 @@ void FVivSpriteImporterModule::RegisterMenus()
 		UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Window");
 		{
 			FToolMenuSection& Section = Menu->FindOrAddSection("WindowLayout");
-			Section.AddMenuEntryWithCommandList(FVivSpriteImporterCommands::Get().OpenPluginWindow, PluginCommands);
+			Section.AddMenuEntryWithCommandList(FVivSpriteImporterCommands::Get().PluginAction, PluginCommands);
 		}
 	}
 
@@ -85,7 +74,7 @@ void FVivSpriteImporterModule::RegisterMenus()
 		{
 			FToolMenuSection& Section = ToolbarMenu->FindOrAddSection("Settings");
 			{
-				FToolMenuEntry& Entry = Section.AddEntry(FToolMenuEntry::InitToolBarButton(FVivSpriteImporterCommands::Get().OpenPluginWindow));
+				FToolMenuEntry& Entry = Section.AddEntry(FToolMenuEntry::InitToolBarButton(FVivSpriteImporterCommands::Get().PluginAction));
 				Entry.SetCommandList(PluginCommands);
 			}
 		}

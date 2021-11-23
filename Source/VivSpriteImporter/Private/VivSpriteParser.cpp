@@ -140,7 +140,7 @@ void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TSharedPtr<FJsonOb
 	if(CompressionString == TEXT("Default")) {texture->CompressionSettings = TextureCompressionSettings::TC_Default				;}	
 	else if(CompressionString == TEXT("NormalMap")) {texture->CompressionSettings = TextureCompressionSettings::TC_Normalmap				;}
 	else if(CompressionString == TEXT("Masks")) {texture->CompressionSettings = TextureCompressionSettings::TC_Masks					;}
-	else if(CompressionString == TEXT("Grayscale")) {texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale				;}
+	else if(CompressionString == TEXT("Grayscale") || CompressionString == TEXT("Greyscale")) {texture->CompressionSettings = TextureCompressionSettings::TC_Grayscale				;}
 	else if(CompressionString == TEXT("Displacementmap")) {texture->CompressionSettings = TextureCompressionSettings::TC_Displacementmap		;}	
 	else if(CompressionString == TEXT("VectorDisplacementmap")) {texture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap	;}
 	else if(CompressionString == TEXT("HDR")) {texture->CompressionSettings = TextureCompressionSettings::TC_HDR					;}	
