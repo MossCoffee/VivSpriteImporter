@@ -54,7 +54,12 @@ void FVivSpriteImporterModule::PluginButtonClicked()
 {
 	FString LastFilePath = FString("C:\\");
 	FString FilePath;
-	if(OpenFile(FString("Select Vivsprite to import"), FString(".vivsprite"), LastFilePath, FilePath)){
+	if(OpenFile(FString("Select Vivsprite to import"), FString(".json"), LastFilePath, FilePath)){
+		int32 i = 0;
+		if (!FilePath.FindLastChar('\\', i) && !FilePath.FindLastChar('/', i)) {
+			return;
+		}
+		FilePath.RemoveAt(i, FilePath.Len() - i);
 		VivSpriteParser parser(FilePath);
 	}
 
