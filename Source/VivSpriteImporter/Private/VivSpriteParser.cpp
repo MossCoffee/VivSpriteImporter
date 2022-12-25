@@ -188,24 +188,10 @@ UTexture2D* VivSpriteParser::CreateTexture(FString textureName, TSharedPtr<FJson
 	newTexture->SetExternalPackage(Package);
 
 	FString PackageFileName = FPackageName::LongPackageNameToFilename(PackageName, FPackageName::GetAssetPackageExtension());
-	/*
-	* 	FSavePackageArgs(
-		const ITargetPlatform* InTargetPlatform,
-		FArchiveCookData* InArchiveCookData,
-		EObjectFlags InTopLevelFlags,
-		uint32 InSaveFlags,
-		bool bInForceByteSwapping,
-		bool bInWarnOfLongFilename,
-		bool bInSlowTask,
-		FDateTime InFinalTimeStamp,
-		FOutputDevice* InError,
-		FSavePackageContext* InSavePackageContext = nullptr
-	)
-	*/
 	FSavePackageArgs Args(nullptr, nullptr, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone, SAVE_NoError, true, true, true, FDateTime::Now(), GError);
 	FSavePackageResultStruct FSaveResult = UPackage::Save(Package, newTexture, *PackageFileName, Args);
-	//bool bSaved = UPackage::SavePackage(Package, newTexture, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone, *PackageFileName, GError, nullptr, true, true, SAVE_NoError);
-	//Error Handling
+
+	//Error Handling goes here
 
 	return newTexture;
 }
@@ -314,6 +300,7 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 			//a mipmap of some kind. If "TMGS_NoMipmaps" is required to keep clarity of the art, then 
 			//you have to add the Mip manually
 			NewTexture->MipGenSettings = TextureMipGenSettings::TMGS_Unfiltered;
+			NewTexture->MipLoadOptions = ETextureMipLoadOptions::OnlyFirstMip;
 			NewTexture->SRGB = false;
 			NewTexture->UpdateResource();
 
@@ -325,6 +312,9 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 				NewTexture->UpdateResource();
 				destination->MarkPackageDirty();
 				FAssetRegistryModule::AssetCreated(NewTexture);
+
+				//NewTexture->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
+				//FAssetRegistryModule::AssetSaved(*NewTexture);
 
 			}
 		}
