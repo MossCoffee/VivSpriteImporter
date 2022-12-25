@@ -9,6 +9,7 @@
 #include "IImageWrapperModule.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
+#include "UObject/SavePackage.h"
 #include "UObject/UObjectGlobals.h"
 
 VivSpriteParser::VivSpriteParser(FString _FilePath) 
@@ -150,7 +151,7 @@ void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TSharedPtr<FJsonOb
 	else if(CompressionString == TEXT("HDRCompressed")) {texture->CompressionSettings = TextureCompressionSettings::TC_HDR_Compressed		;}	
 	else if(CompressionString == TEXT("BC7")) {texture->CompressionSettings = TextureCompressionSettings::TC_BC7					;}	
 	else if(CompressionString == TEXT("HalfFloat")) {texture->CompressionSettings = TextureCompressionSettings::TC_HalfFloat				;}
-	else if(CompressionString == TEXT("ReflectionCapture")) {texture->CompressionSettings = TextureCompressionSettings::TC_ReflectionCapture		;}
+	//else if(CompressionString == TEXT("ReflectionCapture")) {texture->CompressionSettings = TextureCompressionSettings::TC_EncodedReflectionCapture		;}
 	else {texture->CompressionSettings = TextureCompressionSettings::TC_MAX;}
 
 
@@ -187,7 +188,24 @@ UTexture2D* VivSpriteParser::CreateTexture(FString textureName, TSharedPtr<FJson
 	newTexture->SetExternalPackage(Package);
 
 	FString PackageFileName = FPackageName::LongPackageNameToFilename(PackageName, FPackageName::GetAssetPackageExtension());
-	bool bSaved = UPackage::SavePackage(Package, newTexture, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone, *PackageFileName, GError, nullptr, true, true, SAVE_NoError);
+	/*
+	* 	FSavePackageArgs(
+		const ITargetPlatform* InTargetPlatform,
+		FArchiveCookData* InArchiveCookData,
+		EObjectFlags InTopLevelFlags,
+		uint32 InSaveFlags,
+		bool bInForceByteSwapping,
+		bool bInWarnOfLongFilename,
+		bool bInSlowTask,
+		FDateTime InFinalTimeStamp,
+		FOutputDevice* InError,
+		FSavePackageContext* InSavePackageContext = nullptr
+	)
+	*/
+	FSavePackageArgs Args(nullptr, nullptr, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone, SAVE_NoError, true, true, true, FDateTime::Now(), GError);
+	FSavePackageResultStruct FSaveResult = UPackage::Save(Package, newTexture, *PackageFileName, Args);
+	//bool bSaved = UPackage::SavePackage(Package, newTexture, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone, *PackageFileName, GError, nullptr, true, true, SAVE_NoError);
+	//Error Handling
 
 	return newTexture;
 }
@@ -296,16 +314,18 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 			NewTexture->SRGB = false;
 			NewTexture->UpdateResource();
 
-			FTexture2DMipMap* Mip = new(NewTexture->PlatformData->Mips) FTexture2DMipMap();
+			FTexturePlatformData* TextureData = NewTexture->GetPlatformData();
+
+			FTexture2DMipMap* Mip = new(TextureData->Mips) FTexture2DMipMap();
 			Mip->SizeX = Width;
 			Mip->SizeY = Height;
 
 			if (NewTexture)
 			{
-				uint8* MipData = static_cast<uint8*>(NewTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE));
+				uint8* MipData = static_cast<uint8*>(TextureData->Mips[0].BulkData.Lock(LOCK_READ_WRITE));
 
-				FMemory::Memcpy(MipData, Data.GetData(), NewTexture->PlatformData->Mips[0].BulkData.GetBulkDataSize());
-				NewTexture->PlatformData->Mips[0].BulkData.Unlock();
+				FMemory::Memcpy(MipData, Data.GetData(), TextureData->Mips[0].BulkData.GetBulkDataSize());
+				TextureData->Mips[0].BulkData.Unlock();
 
 				NewTexture->Source.Init(Width, Height, 1, 1, ETextureSourceFormat::TSF_BGRA8, Data.GetData());
 				NewTexture->UpdateResource();
