@@ -310,23 +310,17 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 			NewTexture = NewObject<UTexture2D>(destination, TextureName, RF_Public | RF_Standalone | RF_MarkAsRootSet);
 
 			NewTexture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
-			NewTexture->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
+			//Note: using this instead of "TMGS_NoMipmaps" because the texture won't render properly without 
+			//a mipmap of some kind. If "TMGS_NoMipmaps" is required to keep clarity of the art, then 
+			//you have to add the Mip manually
+			NewTexture->MipGenSettings = TextureMipGenSettings::TMGS_Unfiltered;
 			NewTexture->SRGB = false;
 			NewTexture->UpdateResource();
 
 			FTexturePlatformData* TextureData = NewTexture->GetPlatformData();
 
-			FTexture2DMipMap* Mip = new(TextureData->Mips) FTexture2DMipMap();
-			Mip->SizeX = Width;
-			Mip->SizeY = Height;
-
 			if (NewTexture)
 			{
-				uint8* MipData = static_cast<uint8*>(TextureData->Mips[0].BulkData.Lock(LOCK_READ_WRITE));
-
-				FMemory::Memcpy(MipData, Data.GetData(), TextureData->Mips[0].BulkData.GetBulkDataSize());
-				TextureData->Mips[0].BulkData.Unlock();
-
 				NewTexture->Source.Init(Width, Height, 1, 1, ETextureSourceFormat::TSF_BGRA8, Data.GetData());
 				NewTexture->UpdateResource();
 				destination->MarkPackageDirty();
