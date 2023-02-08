@@ -9,6 +9,9 @@
 #include "IImageWrapperModule.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
+#include "PaperFlipbookFactory.h"
+//#include "Paper2DEditor/Classes/PaperFlipbookFactory.h"
+//#include "SpriteAssetTypeActions.h"
 #include "UObject/SavePackage.h"
 #include "UObject/UObjectGlobals.h"
 
@@ -72,7 +75,17 @@ bool VivSpriteParser::UnzipFile() {
 }
 
 bool VivSpriteParser::createFlipbooks() {
+
 	//Always returns success because they aren't currently implemented
+	//Step 1: Break the outlines sprite into a sprite sheet object
+	
+	//Sandbox code
+	
+
+	//End Sandbox code
+	//Step 2: Create the flipbook using the outline sprite sheet (See ExecuteCreateFlipbook)
+	
+	//Step 3: add the other sprites as "Other sprites" in the flipbook
 	return true;
 }
 

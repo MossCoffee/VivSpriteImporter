@@ -35,6 +35,8 @@ public class VivSpriteImporter : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
+				"Paper2D",
+				"Paper2DEditor",
 				"Projects",
 				"InputCore",
 				"UnrealEd",
