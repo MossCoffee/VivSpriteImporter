@@ -11,5 +11,5 @@ class UPaperSprite;
 class FVivSpriteFlipbookHelpers
 {
 public:
-	void CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprite>> Objects);
+	static bool CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprite>> Objects);
 };

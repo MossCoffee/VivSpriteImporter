@@ -10,8 +10,7 @@
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "PaperFlipbookFactory.h"
-//#include "Paper2DEditor/Classes/PaperFlipbookFactory.h"
-//#include "SpriteAssetTypeActions.h"
+#include "VivSpriteFlipbookHelpers.h"
 #include "UObject/SavePackage.h"
 #include "UObject/UObjectGlobals.h"
 
@@ -77,16 +76,28 @@ bool VivSpriteParser::UnzipFile() {
 bool VivSpriteParser::createFlipbooks() {
 
 	//Always returns success because they aren't currently implemented
-	//Step 1: Break the outlines sprite into a sprite sheet object
-	
-	//Sandbox code
-	
+	//UTexture2D -> UPaperSprite
+	TArray<TWeakObjectPtr<UPaperSprite>> PaperSpriteArray;
+	for (SpriteSheetData& Data : imageData)
+	{
+		TWeakObjectPtr<UPaperSprite> PaperSprite = ConvertTexture2DToUPaperSprite(Data.texture);
+		if (PaperSprite.IsValid())
+		{
+			PaperSpriteArray.Add(PaperSprite);
+		}
+	}
 
-	//End Sandbox code
-	//Step 2: Create the flipbook using the outline sprite sheet (See ExecuteCreateFlipbook)
+	if (PaperSpriteArray.Num() > 0)
+	{
+		return FVivSpriteFlipbookHelpers::CreateFlipbook(PaperSpriteArray);
+	}
 	
-	//Step 3: add the other sprites as "Other sprites" in the flipbook
-	return true;
+	return true; //Change to false when ConvertTexture2DToUPaperSprite works
+}
+
+TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(UTexture2D* Texture)
+{
+	return TWeakObjectPtr<UPaperSprite>();
 }
 
 void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TSharedPtr<FJsonObject>& JsonData) {

@@ -18,7 +18,7 @@
 #include "PaperSprite.h"
 
 //Pulled directly from SpriteAssetTypeActions in Paper2D. May need some trimming.
-void FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprite>> Objects)
+bool FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprite>> Objects)
 {
 	FAssetToolsModule& AssetToolsModule = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools");
 	FContentBrowserModule& ContentBrowserModule = FModuleManager::LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
@@ -97,5 +97,5 @@ void FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprit
 			ContentBrowserModule.Get().SyncBrowserToAssets(ObjectsToSync);
 		}
 	}
-
+	return true;
 }
