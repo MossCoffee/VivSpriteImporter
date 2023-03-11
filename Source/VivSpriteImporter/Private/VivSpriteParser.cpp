@@ -9,6 +9,7 @@
 #include "IImageWrapperModule.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
+#include "PaperSprite.h"
 #include "PaperFlipbookFactory.h"
 #include "VivSpriteFlipbookHelpers.h"
 #include "UObject/SavePackage.h"
@@ -97,6 +98,7 @@ bool VivSpriteParser::createFlipbooks() {
 
 TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(UTexture2D* Texture)
 {
+	//UPaperSprite PaperSprite;
 	return TWeakObjectPtr<UPaperSprite>();
 }
 
