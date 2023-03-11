@@ -38,8 +38,6 @@ private:
 	UTexture2D* CreateTexture(FString textureName, TSharedPtr<FJsonObject>& textureSettings);
 	bool createFlipbooks();
 
-
-
 	const FString JsonFileName = "settings.json";
 	FString FilePath;
 	FString ResourceName;
