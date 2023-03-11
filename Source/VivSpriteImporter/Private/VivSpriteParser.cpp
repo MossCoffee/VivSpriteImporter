@@ -11,6 +11,7 @@
 #include "Misc/Paths.h"
 #include "PaperSprite.h"
 #include "PaperFlipbookFactory.h"
+#include "SpriteEditorOnlyTypes.h"
 #include "VivSpriteFlipbookHelpers.h"
 #include "UObject/SavePackage.h"
 #include "UObject/UObjectGlobals.h"
@@ -99,6 +100,9 @@ bool VivSpriteParser::createFlipbooks() {
 TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(UTexture2D* Texture)
 {
 	//UPaperSprite PaperSprite;
+	//FSpriteAssetInitParameters paramters;
+	//PaperSprite.InitializeSprite(paramters);
+
 	return TWeakObjectPtr<UPaperSprite>();
 }
 
