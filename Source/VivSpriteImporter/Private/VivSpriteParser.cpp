@@ -99,7 +99,7 @@ bool VivSpriteParser::createFlipbooks() {
 
 TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(UTexture2D* Texture)
 {
-	//UPaperSprite PaperSprite;
+	UPaperSprite* PaperSprite = NewObject<UPaperSprite>();
 	//FSpriteAssetInitParameters paramters;
 	//PaperSprite.InitializeSprite(paramters);
 
