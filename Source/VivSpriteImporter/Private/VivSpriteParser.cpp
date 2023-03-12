@@ -100,10 +100,11 @@ bool VivSpriteParser::createFlipbooks() {
 TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(UTexture2D* Texture)
 {
 	UPaperSprite* PaperSprite = NewObject<UPaperSprite>();
-	//FSpriteAssetInitParameters paramters;
-	//PaperSprite.InitializeSprite(paramters);
+	FSpriteAssetInitParameters paramters;
+	paramters.SetTextureAndFill(Texture);
+	PaperSprite->InitializeSprite(paramters);
 
-	return TWeakObjectPtr<UPaperSprite>();
+	return TWeakObjectPtr<UPaperSprite>(PaperSprite);
 }
 
 void VivSpriteParser::SetTextureSettings(UTexture2D* texture, TSharedPtr<FJsonObject>& JsonData) {
