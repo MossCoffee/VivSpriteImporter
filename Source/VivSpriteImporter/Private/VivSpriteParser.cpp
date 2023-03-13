@@ -77,23 +77,21 @@ bool VivSpriteParser::UnzipFile() {
 
 bool VivSpriteParser::createFlipbooks() {
 
-	//Always returns success because they aren't currently implemented
-	//UTexture2D -> UPaperSprite
 	TArray<TWeakObjectPtr<UPaperSprite>> PaperSpriteArray;
 	TWeakObjectPtr<UPaperSprite> PaperSprite;
+	FSpriteAssetInitParameters Param;
 	for (SpriteSheetData& Data : imageData)
 	{
-		if (!PaperSprite.IsValid())
+		if (Param.Texture != nullptr)
 		{
-			PaperSprite = ConvertTexture2DToUPaperSprite(Data.texture);
+			Param.SetTextureAndFill(Data.texture);
 		}
 		else
 		{
-			TObjectPtr<UTexture> TextureData = Data.texture;
-			//PaperSprite->AdditionalSourceTextures.Add(TextureData);
+			Param.AdditionalTextures.Add(Data.texture);
 		}
 	}
-	
+	PaperSprite = ConvertTexture2DToUPaperSprite(Param);
 	if (PaperSprite.IsValid())
 	{
 		PaperSpriteArray.Add(PaperSprite);
@@ -103,12 +101,10 @@ bool VivSpriteParser::createFlipbooks() {
 	return false;
 }
 
-TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(UTexture2D* Texture)
+TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(FSpriteAssetInitParameters& param)
 {
 	UPaperSprite* PaperSprite = NewObject<UPaperSprite>();
 	FSpriteAssetInitParameters parameters;
-	parameters.SetTextureAndFill(Texture);
-	//parameters.AdditionalTextures(
 	PaperSprite->InitializeSprite(parameters);
 
 	return TWeakObjectPtr<UPaperSprite>(PaperSprite);

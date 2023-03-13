@@ -14,6 +14,7 @@
 #include "Serialization/JsonReader.h"
 
 class UPaperSprite;
+struct FSpriteAssetInitParameters;
 
 struct SpriteSheetData {
 	FString name;
@@ -32,7 +33,7 @@ private:
 	UTexture2D* ImportFileAsTexture2D(const FString& Filename, UPackage* destination, FString& textureName);
 	UTexture2D* ImportBufferAsTexture2D(const TArray<uint8>& Buffer, UPackage* destination, FString& textureName);
 	bool ParseJSONFile(FString filePath);
-	TWeakObjectPtr<UPaperSprite> ConvertTexture2DToUPaperSprite(UTexture2D* Texture);
+	TWeakObjectPtr<UPaperSprite> ConvertTexture2DToUPaperSprite(FSpriteAssetInitParameters& Param);
 
 	bool importVivSprite();
 	UTexture2D* CreateTexture(FString textureName, TSharedPtr<FJsonObject>& textureSettings);
