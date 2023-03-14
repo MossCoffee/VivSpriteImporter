@@ -80,17 +80,21 @@ bool VivSpriteParser::createFlipbooks() {
 	TArray<TWeakObjectPtr<UPaperSprite>> PaperSpriteArray;
 	TWeakObjectPtr<UPaperSprite> PaperSprite;
 	FSpriteAssetInitParameters Param;
+	TArray<UTexture*> AdditionalTextures;
 	for (SpriteSheetData& Data : imageData)
 	{
-		if (Param.Texture != nullptr)
+		if (Param.Texture == nullptr)
 		{
 			Param.SetTextureAndFill(Data.texture);
 		}
 		else
 		{
-			Param.AdditionalTextures.Add(Data.texture);
+			AdditionalTextures.Add(Data.texture);
 		}
 	}
+	//Put the uvs in the paramters?
+	Param.AdditionalTextures = AdditionalTextures;
+	//This is where we cut up the texture. We're going to loop through all the uvs & create a new param based on each.
 	PaperSprite = ConvertTexture2DToUPaperSprite(Param);
 	if (PaperSprite.IsValid())
 	{
@@ -104,9 +108,23 @@ bool VivSpriteParser::createFlipbooks() {
 TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(FSpriteAssetInitParameters& param)
 {
 	UPaperSprite* PaperSprite = NewObject<UPaperSprite>();
-	FSpriteAssetInitParameters parameters;
-	PaperSprite->InitializeSprite(parameters);
+	PaperSprite->InitializeSprite(param);
 
+	FString PaperSpriteName = TEXT("test");
+
+	FString PackageName = TEXT("/Game/SpriteSheets/") + Subfolder + TEXT("/");
+	FString FullTextureName = ResourceName + TEXT("_") + PaperSpriteName;
+	PackageName += FullTextureName;
+	UPackage* Package = CreatePackage(*PackageName);
+	Package->FullyLoad();
+
+	PaperSprite->SetExternalPackage(Package);
+
+	FString PackageFileName = FPackageName::LongPackageNameToFilename(PackageName, FPackageName::GetAssetPackageExtension());
+	FSavePackageArgs Args(nullptr, nullptr, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone, SAVE_NoError, true, true, true, FDateTime::Now(), GError);
+	FSavePackageResultStruct FSaveResult = UPackage::Save(Package, PaperSprite, *PackageFileName, Args);
+
+	//Save the paper sprite here
 	return TWeakObjectPtr<UPaperSprite>(PaperSprite);
 }
 

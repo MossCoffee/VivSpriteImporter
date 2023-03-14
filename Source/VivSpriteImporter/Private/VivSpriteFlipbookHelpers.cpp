@@ -58,7 +58,7 @@ bool FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprit
 
 			const FString NewFlipBookDefaultPath = LongPackagePath + TEXT("/") + FlipbookName;
 			FString DefaultSuffix;
-			FString AssetName;
+			FString AssetName = TEXT("test");
 			FString PackageName;
 
 			UPaperFlipbookFactory* FlipbookFactory = NewObject<UPaperFlipbookFactory>();
