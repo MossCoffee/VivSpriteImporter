@@ -77,7 +77,7 @@ bool VivSpriteParser::UnzipFile() {
 
 bool VivSpriteParser::createFlipbooks() {
 
-	TArray<TWeakObjectPtr<UPaperSprite>> PaperSpriteArray;
+	TArray<TWeakObjectPtr<UPaperSprite>> PaperSpriteArray; //Gonna keep it a buck 50. This is probably supposed to be UPaperSpriteSheet. See: FPaperSpriteSheetAssetTypeActions::GetActions
 	TWeakObjectPtr<UPaperSprite> PaperSprite;
 	FSpriteAssetInitParameters Param;
 	TArray<UTexture*> AdditionalTextures;
