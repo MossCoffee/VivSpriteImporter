@@ -97,7 +97,11 @@ bool VivSpriteParser::createFlipbooks() {
 	}
 	//Put the uvs in the paramters?
 	Param.AdditionalTextures = AdditionalTextures;
-	//This is where we cut up the texture. We're going to loop through all the uvs & create a new param based on each.
+	//This is where we cut up the texture. We're going to loop through all the uvs & create a new param based on each.\
+	//Test
+	Param.Offset = FIntPoint(32, 32);
+	Param.Dimension = FIntPoint(32, 32);
+	//
 	PaperSprite = ConvertTexture2DToUPaperSprite(Param);
 	if (PaperSprite.IsValid())
 	{
@@ -127,7 +131,6 @@ TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(FSp
 	FSavePackageArgs Args(nullptr, nullptr, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone, SAVE_NoError, true, true, true, FDateTime::Now(), GError);
 	FSavePackageResultStruct FSaveResult = UPackage::Save(Package, PaperSprite, *PackageFileName, Args);
 
-	//Save the paper sprite here
 	return TWeakObjectPtr<UPaperSprite>(PaperSprite);
 }
 
