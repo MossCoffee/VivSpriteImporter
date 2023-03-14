@@ -16,6 +16,7 @@
 #include "PaperFlipbook.h"
 #include "PaperFlipbookFactory.h"
 #include "PaperSprite.h"
+//#include "PaperSpriteSheet.h"
 
 //Pulled directly from SpriteAssetTypeActions in Paper2D. May need some trimming.
 bool FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprite>> Objects)

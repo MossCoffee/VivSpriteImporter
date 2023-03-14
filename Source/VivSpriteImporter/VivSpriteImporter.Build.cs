@@ -35,6 +35,7 @@ public class VivSpriteImporter : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
+				
 				"Paper2D",
 				"Paper2DEditor",
 				"Projects",
@@ -45,7 +46,8 @@ public class VivSpriteImporter : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"DesktopPlatform"
+				"DesktopPlatform",
+				//"PaperSpriteSheetImporter" For UPaperSpriteSheet. Doesn't seem to work
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

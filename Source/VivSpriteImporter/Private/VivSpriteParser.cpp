@@ -10,6 +10,7 @@
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "PaperSprite.h"
+//#include "PaperSpriteSheet.h"
 #include "PaperFlipbookFactory.h"
 #include "SpriteEditorOnlyTypes.h"
 #include "VivSpriteFlipbookHelpers.h"
@@ -79,6 +80,8 @@ bool VivSpriteParser::createFlipbooks() {
 
 	TArray<TWeakObjectPtr<UPaperSprite>> PaperSpriteArray; //Gonna keep it a buck 50. This is probably supposed to be UPaperSpriteSheet. See: FPaperSpriteSheetAssetTypeActions::GetActions
 	TWeakObjectPtr<UPaperSprite> PaperSprite;
+	//TWeakObjectPtr <UPaperSpriteSheet> SpriteSheet;
+
 	FSpriteAssetInitParameters Param;
 	TArray<UTexture*> AdditionalTextures;
 	for (SpriteSheetData& Data : imageData)
