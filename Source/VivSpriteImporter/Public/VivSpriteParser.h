@@ -43,6 +43,7 @@ private:
 	FString FilePath;
 	FString ResourceName;
 	FString Subfolder;
+	FString Sprite2DFileName;
 	int NumSpriteSheets;
 	std::vector<SpriteSheetData> imageData;
 

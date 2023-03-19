@@ -52,6 +52,8 @@ bool VivSpriteParser::importVivSprite() {
 		UE_LOG(LogTemp, Error, TEXT("Parsing Json Data Failed, aborting import"));
 		return false;
 	}
+	FString Sprite2DPath = FilePath + "\\" + Sprite2DFileName;
+
 	UE_LOG(LogTemp, Error, TEXT("past parse json"));
 	for (SpriteSheetData& data : imageData) {
 		data.texture = CreateTexture(data.name, data.settings);
@@ -270,6 +272,7 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 		ResourceName = jsonObj->HasField("name") ? jsonObj->GetStringField("name") : TEXT("default_path");
 		
 		Subfolder = jsonObj->HasField("subfolder") ? jsonObj->GetStringField("subfolder") : ResourceName;
+		Sprite2DFileName = jsonObj->HasField("paper2dsprite") ? jsonObj->GetStringField("paper2dSprite") : TEXT("default_path.paper2dSp");
 		if (Subfolder.Len() == 0) {
 			Subfolder = ResourceName;
 		}
