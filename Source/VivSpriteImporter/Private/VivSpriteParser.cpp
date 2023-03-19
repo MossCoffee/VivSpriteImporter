@@ -296,7 +296,31 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 }
 
 bool VivSpriteParser::ParseSprite2D(FString filePath) {
-	if (filePath.Len()) {}
+	if (!FPaths::FileExists(filePath)) {
+		UE_LOG(LogTemp, Error, TEXT("No file found at: %s"), *filePath);
+		return false;
+	}
+	FString JsonBlob;
+	FFileHelper::LoadFileToString(JsonBlob, *filePath);
+	TSharedPtr<FJsonObject> jsonObj = MakeShareable(new FJsonObject);
+	TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(JsonBlob);
+	const TSharedPtr<FJsonObject> framesObj = jsonObj->GetObjectField("frames");
+	
+
+	//for(const auto& frameObj : framesObj->Values()) 
+	{
+		//Output Struct w/ Name + offset + Size
+		//uvData
+		
+		//name = frameObj.Key;
+		//const auto& frame = frameObj.Value->GetObjectField("frame");
+		//offset.x = frame->GetIntegerField("x");
+		//offset.y = frame->GetIntegerField("y");
+		//size.w = frame->GetIntegerField("w");
+		//size.h = frame->GetIntegerField("h");
+	}
+	
+
 	return true;
 }
 

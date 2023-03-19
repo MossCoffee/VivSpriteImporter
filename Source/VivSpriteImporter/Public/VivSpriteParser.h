@@ -16,10 +16,15 @@
 class UPaperSprite;
 struct FSpriteAssetInitParameters;
 
+//MetaData
 struct SpriteSheetData {
 	FString name;
 	TSharedPtr<FJsonObject> settings;
 	UTexture2D* texture;
+};
+
+struct SpriteSheetUV {
+	FString name;
 };
 
 class VivSpriteParser {
@@ -46,6 +51,6 @@ private:
 	FString Subfolder;
 	FString Sprite2DFileName;
 	int NumSpriteSheets;
+	std::vector<SpriteSheetUV> uvData;
 	std::vector<SpriteSheetData> imageData;
-
 };
