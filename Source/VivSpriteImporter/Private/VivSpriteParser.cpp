@@ -106,6 +106,8 @@ bool VivSpriteParser::createFlipbooks() {
 	Param.AdditionalTextures = AdditionalTextures;
 	//This is where we cut up the texture. We're going to loop through all the uvs & create a new param based on each.\
 	//Test
+
+	//Iterate through uvData for the params
 	Param.Offset = FIntPoint(32, 32);
 	Param.Dimension = FIntPoint(32, 32);
 	//
@@ -277,7 +279,7 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 		ResourceName = jsonObj->HasField("name") ? jsonObj->GetStringField("name") : TEXT("default_path");
 		
 		Subfolder = jsonObj->HasField("subfolder") ? jsonObj->GetStringField("subfolder") : ResourceName;
-		Sprite2DFileName = jsonObj->HasField("paper2dsprite") ? jsonObj->GetStringField("paper2dSprite") : TEXT("default_path.paper2dSp");
+		Sprite2DFileName = jsonObj->HasField("paper2dsprite") ? jsonObj->GetStringField("paper2dSprite") : TEXT("default_path.paper2dSprite");
 		if (Subfolder.Len() == 0) {
 			Subfolder = ResourceName;
 		}
@@ -304,23 +306,24 @@ bool VivSpriteParser::ParseSprite2D(FString filePath) {
 	FFileHelper::LoadFileToString(JsonBlob, *filePath);
 	TSharedPtr<FJsonObject> jsonObj = MakeShareable(new FJsonObject);
 	TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(JsonBlob);
-	const TSharedPtr<FJsonObject> framesObj = jsonObj->GetObjectField("frames");
-	
+	if (FJsonSerializer::Deserialize(reader, jsonObj) && jsonObj.IsValid()) {
+		//This object is coming back as empty ;-;
+		const TSharedPtr<FJsonObject> framesObj = jsonObj->GetObjectField("frames");
 
-	//for(const auto& frameObj : framesObj->Values()) 
-	{
-		//Output Struct w/ Name + offset + Size
-		//uvData
-		
-		//name = frameObj.Key;
-		//const auto& frame = frameObj.Value->GetObjectField("frame");
-		//offset.x = frame->GetIntegerField("x");
-		//offset.y = frame->GetIntegerField("y");
-		//size.w = frame->GetIntegerField("w");
-		//size.h = frame->GetIntegerField("h");
+
+		for (const auto& frameObj : framesObj->Values)
+		{
+			SpriteSheetUV newFrame;
+			newFrame.name = frameObj.Key;
+			const auto& frame = frameObj.Value->AsObject()->GetObjectField("frame");
+			newFrame.offset.X = frame->GetIntegerField("x");
+			newFrame.offset.Y = frame->GetIntegerField("y");
+			newFrame.size.X = frame->GetIntegerField("w");
+			newFrame.size.Y = frame->GetIntegerField("h");
+			uvData.push_back(newFrame);
+		}
+
 	}
-	
-
 	return true;
 }
 
