@@ -53,6 +53,11 @@ bool VivSpriteParser::importVivSprite() {
 		return false;
 	}
 	FString Sprite2DPath = FilePath + "\\" + Sprite2DFileName;
+	bool ParseSprite2DSuccess = ParseSprite2D(Sprite2DPath);
+	if (!ParseSprite2DSuccess) {
+		UE_LOG(LogTemp, Error, TEXT("Parsing Json Data Failed, aborting import"));
+		return false;
+	}
 
 	UE_LOG(LogTemp, Error, TEXT("past parse json"));
 	for (SpriteSheetData& data : imageData) {
@@ -287,6 +292,11 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 		}
 
 	}
+	return true;
+}
+
+bool VivSpriteParser::ParseSprite2D(FString filePath) {
+	if (filePath.Len()) {}
 	return true;
 }
 
