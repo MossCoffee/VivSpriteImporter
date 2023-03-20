@@ -25,8 +25,8 @@ struct SpriteSheetData {
 
 struct SpriteSheetUV {
 	FString name;
-	FVector2D offset;
-	FVector2D size;
+	FIntPoint offset;
+	FIntPoint size;
 };
 
 class VivSpriteParser {

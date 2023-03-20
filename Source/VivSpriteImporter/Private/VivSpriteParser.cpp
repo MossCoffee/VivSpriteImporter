@@ -104,17 +104,19 @@ bool VivSpriteParser::createFlipbooks() {
 	}
 	//Put the uvs in the paramters?
 	Param.AdditionalTextures = AdditionalTextures;
-	//This is where we cut up the texture. We're going to loop through all the uvs & create a new param based on each.\
-	//Test
+	//This is where we cut up the texture. We're going to loop through all the uvs & create a new param based on each.
+	for (const SpriteSheetUV& uvs : uvData)
+	{
+		//Iterate through uvData for the params
+		Param.Offset = uvs.offset;
+		Param.Dimension = uvs.size;
+		PaperSprite = ConvertTexture2DToUPaperSprite(Param);
+		PaperSpriteArray.Add(PaperSprite);
+	}
 
-	//Iterate through uvData for the params
-	Param.Offset = FIntPoint(32, 32);
-	Param.Dimension = FIntPoint(32, 32);
-	//
-	PaperSprite = ConvertTexture2DToUPaperSprite(Param);
+
 	if (PaperSprite.IsValid())
 	{
-		PaperSpriteArray.Add(PaperSprite);
 		return FVivSpriteFlipbookHelpers::CreateFlipbook(PaperSpriteArray);
 	}
 	
@@ -307,7 +309,6 @@ bool VivSpriteParser::ParseSprite2D(FString filePath) {
 	TSharedPtr<FJsonObject> jsonObj = MakeShareable(new FJsonObject);
 	TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(JsonBlob);
 	if (FJsonSerializer::Deserialize(reader, jsonObj) && jsonObj.IsValid()) {
-		//This object is coming back as empty ;-;
 		const TSharedPtr<FJsonObject> framesObj = jsonObj->GetObjectField("frames");
 
 
