@@ -9,14 +9,13 @@
 #include "Misc/FeedbackContext.h"
 #include "Styling/AppStyle.h"
 
-//#include "SpriteEditor/SpriteEditor.h"
 #include "IContentBrowserSingleton.h"
 #include "ContentBrowserModule.h"
 #include "PaperFlipbookHelpers.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookFactory.h"
 #include "PaperSprite.h"
-//#include "PaperSpriteSheet.h"
+
 
 //Pulled directly from SpriteAssetTypeActions in Paper2D. May need some trimming.
 bool FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprite>> Objects, const FString& FlipbookName)
@@ -58,7 +57,7 @@ bool FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprit
 
 			const FString NewFlipBookDefaultPath = LongPackagePath + TEXT("/") + FlipbookName;
 			FString DefaultSuffix;
-			FString AssetName = TEXT("test");
+			FString AssetName;
 			FString PackageName;
 
 			UPaperFlipbookFactory* FlipbookFactory = NewObject<UPaperFlipbookFactory>();

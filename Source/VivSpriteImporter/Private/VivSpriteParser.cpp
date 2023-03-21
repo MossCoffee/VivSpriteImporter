@@ -32,7 +32,7 @@ VivSpriteParser::~VivSpriteParser() {
 }
 
 bool VivSpriteParser::importVivSprite() {
-	UE_LOG(LogTemp, Error, TEXT("Importing Viv Sprite"));
+	UE_LOG(LogTemp, Display, TEXT("Importing Viv Sprite"));
 	//Find the file - disabled until we switch to zip files
 	//if (!FPaths::FileExists(FilePath)) {
 	//	UE_LOG(LogTemp, Error, TEXT("No file found at: %s, aborting import"), *FilePath);
@@ -44,7 +44,7 @@ bool VivSpriteParser::importVivSprite() {
 		UE_LOG(LogTemp, Error, TEXT("Error unzipping, aborting import"), *FilePath);
 		return false;
 	}
-	UE_LOG(LogTemp, Error, TEXT("past unzip"));
+
 	//add files to unreal engine (with settings)
 	FString jsonPath = FilePath + "\\" + JsonFileName;
 	bool ParseSuccess = ParseJSONFile(jsonPath);
@@ -59,7 +59,6 @@ bool VivSpriteParser::importVivSprite() {
 		return false;
 	}
 
-	UE_LOG(LogTemp, Error, TEXT("past parse json"));
 	for (SpriteSheetData& data : imageData) {
 		data.texture = CreateTexture(data.name, data.settings);
 		if (data.texture == nullptr) {
@@ -67,14 +66,14 @@ bool VivSpriteParser::importVivSprite() {
 			return false;
 		}
 	}
-	UE_LOG(LogTemp, Error, TEXT("past create texture"));
+
 	//Set up flip books
 	bool flipbookSuccess = createFlipbooks();
 	if (!flipbookSuccess) {
 		UE_LOG(LogTemp, Error, TEXT("Error creating flipbooks, aborting import"));
 		return false;
 	}
-	UE_LOG(LogTemp, Error, TEXT("Job Done!"));
+
 	return true;
 }
 
@@ -85,9 +84,8 @@ bool VivSpriteParser::UnzipFile() {
 
 bool VivSpriteParser::createFlipbooks() {
 
-	TArray<TWeakObjectPtr<UPaperSprite>> PaperSpriteArray; //Gonna keep it a buck 50. This is probably supposed to be UPaperSpriteSheet. See: FPaperSpriteSheetAssetTypeActions::GetActions
+	TArray<TWeakObjectPtr<UPaperSprite>> PaperSpriteArray; 
 	TWeakObjectPtr<UPaperSprite> PaperSprite;
-	//TWeakObjectPtr <UPaperSpriteSheet> SpriteSheet;
 
 	FSpriteAssetInitParameters Param;
 	TArray<UTexture*> AdditionalTextures;
@@ -107,7 +105,6 @@ bool VivSpriteParser::createFlipbooks() {
 	//This is where we cut up the texture. We're going to loop through all the uvs & create a new param based on each.
 	for (const SpriteSheetUV& uvs : uvData)
 	{
-		//Iterate through uvData for the params
 		Param.Offset = uvs.offset;
 		Param.Dimension = uvs.size;
 		PaperSprite = ConvertTexture2DToUPaperSprite(Param);
@@ -117,7 +114,7 @@ bool VivSpriteParser::createFlipbooks() {
 
 	if (PaperSprite.IsValid())
 	{
-		return FVivSpriteFlipbookHelpers::CreateFlipbook(PaperSpriteArray, TEXT("Slime_Animation"));
+		return FVivSpriteFlipbookHelpers::CreateFlipbook(PaperSpriteArray, ResourceName);
 	}
 	
 	return false;
