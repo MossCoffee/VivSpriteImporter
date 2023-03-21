@@ -19,7 +19,7 @@
 //#include "PaperSpriteSheet.h"
 
 //Pulled directly from SpriteAssetTypeActions in Paper2D. May need some trimming.
-bool FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprite>> Objects)
+bool FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprite>> Objects, const FString& FlipbookName)
 {
 	FAssetToolsModule& AssetToolsModule = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools");
 	FContentBrowserModule& ContentBrowserModule = FModuleManager::LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
@@ -51,7 +51,6 @@ bool FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprit
 		{
 			GWarn->UpdateProgress(Progress++, TotalProgress);
 
-			const FString& FlipbookName = Iter.Key;
 			TArray<UPaperSprite*> Sprites = Iter.Value;
 
 			const FString SpritePathName = AllSprites[0]->GetOutermost()->GetPathName();
@@ -73,17 +72,12 @@ bool FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprit
 
 			AssetToolsModule.Get().CreateUniqueAssetName(NewFlipBookDefaultPath, DefaultSuffix, /*out*/ PackageName, /*out*/ AssetName);
 			const FString PackagePath = FPackageName::GetLongPackagePath(PackageName);
-			if (bOneFlipbookCreated)
+
+			if (UObject* NewAsset = AssetToolsModule.Get().CreateAsset(AssetName, PackagePath, UPaperFlipbook::StaticClass(), FlipbookFactory))
 			{
-				ContentBrowserModule.Get().CreateNewAsset(AssetName, PackagePath, UPaperFlipbook::StaticClass(), FlipbookFactory); //Here's our boy
+				ObjectsToSync.Add(NewAsset);
 			}
-			else
-			{
-				if (UObject* NewAsset = AssetToolsModule.Get().CreateAsset(AssetName, PackagePath, UPaperFlipbook::StaticClass(), FlipbookFactory))
-				{
-					ObjectsToSync.Add(NewAsset);
-				}
-			}
+
 
 			if (GWarn->ReceivedUserCancel())
 			{

@@ -117,7 +117,7 @@ bool VivSpriteParser::createFlipbooks() {
 
 	if (PaperSprite.IsValid())
 	{
-		return FVivSpriteFlipbookHelpers::CreateFlipbook(PaperSpriteArray);
+		return FVivSpriteFlipbookHelpers::CreateFlipbook(PaperSpriteArray, TEXT("Slime_Animation"));
 	}
 	
 	return false;
