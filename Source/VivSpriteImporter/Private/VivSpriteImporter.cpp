@@ -52,7 +52,6 @@ void FVivSpriteImporterModule::ShutdownModule()
 
 void FVivSpriteImporterModule::PluginButtonClicked()
 {
-	FString LastFilePath = FString("C:\\");
 	FString FilePath;
 	if(OpenFile(FString("Select Vivsprite to import"), FString(".json"), LastFilePath, FilePath)){
 		int32 i = 0;
@@ -80,6 +79,26 @@ void FVivSpriteImporterModule::RegisterMenus()
 			Section.AddMenuEntryWithCommandList(FVivSpriteImporterCommands::Get().PluginAction, PluginCommands);
 		}
 	}
+}
+
+bool FVivSpriteImporterModule::OpenFolder(const FString& Title, const FString& LastPath, FString& OutFilePath)
+{
+	TSharedPtr<SWidget> empty;
+	IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+	const void* ParentWindow = FSlateApplication::Get().FindBestParentWindowHandleForDialogs(empty);
+	bool bOpened = false;
+	bOpened = DesktopPlatform->OpenDirectoryDialog(
+		ParentWindow,
+		Title,
+		LastPath,
+		OutFilePath
+	);
+	if (bOpened)
+	{
+		// User successfully chose a file; remember the path for the next time the dialog opens.
+		//InOutLastPath = OutOpenFilenames;
+	}
+	return false;
 }
 
 bool FVivSpriteImporterModule::OpenFile(const FString& Title, const FString& FileTypes, FString& InOutLastPath, FString& OutOpenFilenames)

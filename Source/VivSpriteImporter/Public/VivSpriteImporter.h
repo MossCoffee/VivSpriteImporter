@@ -23,7 +23,9 @@ private:
 
 	void RegisterMenus();
 	bool OpenFile(const FString& Title, const FString& FileTypes, FString& InOutLastPath, FString& OutOpenFilenames);
+	bool OpenFolder(const FString& Title, const FString& LastPath, FString& OutFilePath);
 
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;
+	FString LastFilePath = FString("C:\\");
 };
