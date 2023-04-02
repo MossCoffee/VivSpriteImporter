@@ -72,21 +72,12 @@ void FVivSpriteImporterModule::RegisterMenus()
 	FToolMenuOwnerScoped OwnerScoped(this);
 
 	{
-		UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Window");
+		UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools");
 		{
-			FToolMenuSection& Section = Menu->FindOrAddSection("WindowLayout");
+			
+			
+			FToolMenuSection& Section = Menu->AddSection("Vivsprite", FText::FromString("Vivsprite"));
 			Section.AddMenuEntryWithCommandList(FVivSpriteImporterCommands::Get().PluginAction, PluginCommands);
-		}
-	}
-
-	{
-		UToolMenu* ToolbarMenu = UToolMenus::Get()->ExtendMenu("LevelEditor.LevelEditorToolBar");
-		{
-			FToolMenuSection& Section = ToolbarMenu->FindOrAddSection("Settings");
-			{
-				FToolMenuEntry& Entry = Section.AddEntry(FToolMenuEntry::InitToolBarButton(FVivSpriteImporterCommands::Get().PluginAction));
-				Entry.SetCommandList(PluginCommands);
-			}
 		}
 	}
 }
@@ -98,7 +89,7 @@ bool FVivSpriteImporterModule::OpenFile(const FString& Title, const FString& Fil
 	const void* ParentWindow = FSlateApplication::Get().FindBestParentWindowHandleForDialogs(empty);
 	bool bOpened = false;
 	TArray<FString> output;
-
+	//OpenDirectoryDialog
 	bOpened = DesktopPlatform->OpenFileDialog(
 		ParentWindow,
 		Title,

@@ -100,7 +100,6 @@ bool VivSpriteParser::createFlipbooks() {
 			AdditionalTextures.Add(Data.texture);
 		}
 	}
-	//Put the uvs in the paramters?
 	Param.AdditionalTextures = AdditionalTextures;
 	//This is where we cut up the texture. We're going to loop through all the uvs & create a new param based on each.
 	for (const SpriteSheetUV& uvs : uvData)
