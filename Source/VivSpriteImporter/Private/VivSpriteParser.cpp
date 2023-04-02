@@ -259,7 +259,6 @@ UTexture2D* VivSpriteParser::CreateTexture(FString textureName, TSharedPtr<FJson
 	FSavePackageResultStruct FSaveResult = UPackage::Save(Package, newTexture, *PackageFileName, Args);
 	Package->FullyLoad();
 	//Error Handling goes here
-
 	return newTexture;
 }
 
@@ -393,10 +392,8 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 			NewTexture = NewObject<UTexture2D>(destination, TextureName, RF_Public | RF_Standalone | RF_MarkAsRootSet);
 
 			NewTexture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
-			//Note: using this instead of "TMGS_NoMipmaps" because the texture won't render properly without 
-			//a mipmap of some kind. If "TMGS_NoMipmaps" is required to keep clarity of the art, then 
-			//you have to add the Mip manually
-			NewTexture->MipGenSettings = TextureMipGenSettings::TMGS_Unfiltered;
+
+			NewTexture->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
 			NewTexture->MipLoadOptions = ETextureMipLoadOptions::OnlyFirstMip;
 			NewTexture->SRGB = false;
 			NewTexture->UpdateResource();
@@ -410,8 +407,7 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 				destination->MarkPackageDirty();
 				FAssetRegistryModule::AssetCreated(NewTexture);
 
-				//NewTexture->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
-				//FAssetRegistryModule::AssetSaved(*NewTexture);
+				FAssetRegistryModule::AssetSaved(*NewTexture);
 
 			}
 		}
