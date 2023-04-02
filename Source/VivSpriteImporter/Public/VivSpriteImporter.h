@@ -23,7 +23,7 @@ private:
 
 	void RegisterMenus();
 	bool OpenFile(const FString& Title, const FString& FileTypes, FString& InOutLastPath, FString& OutOpenFilenames);
-	bool OpenFolder(const FString& Title, const FString& LastPath, FString& OutFilePath);
+	bool OpenFolder(const FString& Title, FString& InOutLastPath, FString& OutFilePath);
 
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;

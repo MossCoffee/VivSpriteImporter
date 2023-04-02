@@ -52,12 +52,6 @@ bool VivSpriteParser::importVivSprite() {
 		UE_LOG(LogTemp, Error, TEXT("Parsing Json Data Failed, aborting import"));
 		return false;
 	}
-	FString Sprite2DPath = FilePath + "\\" + Sprite2DFileName;
-	bool ParseSprite2DSuccess = ParseSprite2D(Sprite2DPath);
-	if (!ParseSprite2DSuccess) {
-		UE_LOG(LogTemp, Error, TEXT("Parsing Json Data Failed, aborting import"));
-		return false;
-	}
 
 	for (SpriteSheetData& data : imageData) {
 		data.texture = CreateTexture(data.name, data.settings);
@@ -65,6 +59,13 @@ bool VivSpriteParser::importVivSprite() {
 			UE_LOG(LogTemp, Error, TEXT("Error creating texture %s, aborting import"), *data.name);
 			return false;
 		}
+	}
+
+	FString Sprite2DPath = FilePath + "\\" + Sprite2DFileName;
+	bool ParseSprite2DSuccess = ParseSprite2D(Sprite2DPath);
+	if (!ParseSprite2DSuccess) {
+		UE_LOG(LogTemp, Error, TEXT("Parsing Json Data Failed, aborting import"));
+		return false;
 	}
 
 	//Set up flip books
@@ -137,7 +138,7 @@ TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(FSp
 	FString PackageFileName = FPackageName::LongPackageNameToFilename(PackageName, FPackageName::GetAssetPackageExtension());
 	FSavePackageArgs Args(nullptr, nullptr, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone, SAVE_NoError, true, true, true, FDateTime::Now(), GError);
 	FSavePackageResultStruct FSaveResult = UPackage::Save(Package, PaperSprite, *PackageFileName, Args);
-
+	Package->FullyLoad();
 	return TWeakObjectPtr<UPaperSprite>(PaperSprite);
 }
 
@@ -244,6 +245,7 @@ UTexture2D* VivSpriteParser::CreateTexture(FString textureName, TSharedPtr<FJson
 	FString FullTextureName = ResourceName + TEXT("_") + textureName;
 	PackageName += FullTextureName;
 	UPackage* Package = CreatePackage(*PackageName);
+	
 	Package->FullyLoad();
 
 	UTexture2D* newTexture = ImportFileAsTexture2D(FileName, Package, FullTextureName);
@@ -255,7 +257,7 @@ UTexture2D* VivSpriteParser::CreateTexture(FString textureName, TSharedPtr<FJson
 	FString PackageFileName = FPackageName::LongPackageNameToFilename(PackageName, FPackageName::GetAssetPackageExtension());
 	FSavePackageArgs Args(nullptr, nullptr, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone, SAVE_NoError, true, true, true, FDateTime::Now(), GError);
 	FSavePackageResultStruct FSaveResult = UPackage::Save(Package, newTexture, *PackageFileName, Args);
-
+	Package->FullyLoad();
 	//Error Handling goes here
 
 	return newTexture;
