@@ -258,17 +258,19 @@ UTexture2D* VivSpriteParser::CreateTexture(FString textureName, TSharedPtr<FJson
 
 	UTexture2D* newTexture = ImportFileAsTexture2D(FileName, Package, FullTextureName);
 
+	//If this isn't in it crashes & the flipbook doesn't show up properly 
+	//(in that order)
+	newTexture->PreEditChange(NULL);
+	//Start "External" Changes to Texture
 	SetTextureSettings(newTexture, textureSettings);
-
 	newTexture->SetExternalPackage(Package);
-
 	FString PackageFileName = FPackageName::LongPackageNameToFilename(PackageName, FPackageName::GetAssetPackageExtension());
-	//FArchiveCookContext CookContext(Package, FArchiveCookContext::ECookByTheBook);
-	//FArchiveCookData CookDat(*Target, CookContext);
+	//End "External" Changes to Texture
+	newTexture->PostEditChange();
+
 	FSavePackageArgs Args(nullptr, nullptr, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone, SAVE_NoError, true, true, true, FDateTime::Now(), GError);
 	FSavePackageResultStruct FSaveResult = UPackage::Save(Package, newTexture, *PackageFileName, Args);
 	FAssetRegistryModule::AssetSaved(*newTexture);
-	//FAssetCompileData
 	Package->FullyLoad();
 
 	//Error Handling goes here
