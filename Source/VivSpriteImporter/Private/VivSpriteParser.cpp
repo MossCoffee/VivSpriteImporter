@@ -4,6 +4,7 @@
 
 #include "Engine/Texture.h"
 
+
 #include "ImageUtils.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
@@ -14,6 +15,7 @@
 #include "PaperFlipbookFactory.h"
 #include "SpriteEditorOnlyTypes.h"
 #include "VivSpriteFlipbookHelpers.h"
+#include "UObject/ArchiveCookContext.h"
 #include "UObject/SavePackage.h"
 #include "UObject/UObjectGlobals.h"
 
@@ -46,8 +48,13 @@ bool VivSpriteParser::importVivSprite() {
 	}
 
 	//add files to unreal engine (with settings)
-	FString jsonPath = FilePath + "\\" + JsonFileName;
-	bool ParseSuccess = ParseJSONFile(jsonPath);
+	bool ParseSuccess = false;
+	for (int i = 0; i < JsonFileNames.Num() && !ParseSuccess; ++i)
+	{
+		FString jsonPath = FilePath + "\\" + JsonFileNames[i];
+		ParseSuccess = ParseJSONFile(jsonPath);
+	}
+	
 	if (!ParseSuccess) {
 		UE_LOG(LogTemp, Error, TEXT("Parsing Json Data Failed, aborting import"));
 		return false;
@@ -123,15 +130,16 @@ bool VivSpriteParser::createFlipbooks() {
 TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(FSpriteAssetInitParameters& param)
 {
 	UPaperSprite* PaperSprite = NewObject<UPaperSprite>();
-	PaperSprite->InitializeSprite(param);
-
-	FString PaperSpriteName = TEXT("test");
-
+	FString PaperSpriteName = TEXT("Frame");
 	FString PackageName = TEXT("/Game/SpriteSheets/") + Subfolder + TEXT("/");
 	FString FullTextureName = ResourceName + TEXT("_") + PaperSpriteName;
 	PackageName += FullTextureName;
 	UPackage* Package = CreatePackage(*PackageName);
 	Package->FullyLoad();
+	
+	PaperSprite->InitializeSprite(param);
+
+
 
 	PaperSprite->SetExternalPackage(Package);
 
@@ -255,9 +263,14 @@ UTexture2D* VivSpriteParser::CreateTexture(FString textureName, TSharedPtr<FJson
 	newTexture->SetExternalPackage(Package);
 
 	FString PackageFileName = FPackageName::LongPackageNameToFilename(PackageName, FPackageName::GetAssetPackageExtension());
+	//FArchiveCookContext CookContext(Package, FArchiveCookContext::ECookByTheBook);
+	//FArchiveCookData CookDat(*Target, CookContext);
 	FSavePackageArgs Args(nullptr, nullptr, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone, SAVE_NoError, true, true, true, FDateTime::Now(), GError);
 	FSavePackageResultStruct FSaveResult = UPackage::Save(Package, newTexture, *PackageFileName, Args);
+	FAssetRegistryModule::AssetSaved(*newTexture);
+	//FAssetCompileData
 	Package->FullyLoad();
+
 	//Error Handling goes here
 	return newTexture;
 }
@@ -406,8 +419,6 @@ UTexture2D* VivSpriteParser::ImportBufferAsTexture2D(const TArray<uint8>& Buffer
 				NewTexture->UpdateResource();
 				destination->MarkPackageDirty();
 				FAssetRegistryModule::AssetCreated(NewTexture);
-
-				FAssetRegistryModule::AssetSaved(*NewTexture);
 
 			}
 		}

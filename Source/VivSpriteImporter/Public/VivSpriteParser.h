@@ -47,7 +47,7 @@ private:
 	UTexture2D* CreateTexture(FString textureName, TSharedPtr<FJsonObject>& textureSettings);
 	bool createFlipbooks();
 
-	const FString JsonFileName = "settings.json";
+	const TArray<FString> JsonFileNames = { TEXT("import.json"), TEXT("settings.json") };
 	FString FilePath;
 	FString ResourceName;
 	FString Subfolder;
