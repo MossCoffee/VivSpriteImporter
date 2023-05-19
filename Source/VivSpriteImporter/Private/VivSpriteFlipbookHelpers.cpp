@@ -18,7 +18,7 @@
 
 
 //Pulled directly from SpriteAssetTypeActions in Paper2D. May need some trimming.
-bool FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprite>> Objects, const FString& FlipbookName)
+bool FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprite>> Objects, const FString& FlipbookName, const FString& FlipbookPath)
 {
 	FAssetToolsModule& AssetToolsModule = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools");
 	FContentBrowserModule& ContentBrowserModule = FModuleManager::LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
@@ -52,10 +52,10 @@ bool FVivSpriteFlipbookHelpers::CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprit
 
 			TArray<UPaperSprite*> Sprites = Iter.Value;
 
-			const FString SpritePathName = AllSprites[0]->GetOutermost()->GetPathName();
-			const FString LongPackagePath = FPackageName::GetLongPackagePath(AllSprites[0]->GetOutermost()->GetPathName());
+			//const FString SpritePathName = AllSprites[0]->GetOutermost()->GetPathName();
+			//const FString LongPackagePath = FPackageName::GetLongPackagePath(AllSprites[0]->GetOutermost()->GetPathName());
 
-			const FString NewFlipBookDefaultPath = LongPackagePath + TEXT("/") + FlipbookName;
+			const FString NewFlipBookDefaultPath = FlipbookPath + TEXT("/") + FlipbookName;
 			FString DefaultSuffix;
 			FString AssetName;
 			FString PackageName;

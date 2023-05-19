@@ -49,10 +49,23 @@ private:
 
 	const TArray<FString> JsonFileNames = { TEXT("import.json"), TEXT("settings.json") };
 	FString FilePath;
-	FString ResourceName;
-	FString Subfolder;
+	FString AnimationName;
+	FString CharacterName;
 	FString Sprite2DFileName;
 	int NumSpriteSheets;
 	std::vector<SpriteSheetUV> uvData;
 	std::vector<SpriteSheetData> imageData;
+
+	FString GetCharacterLevelPath() { 
+		return TEXT("/Game/SpriteSheets/") + CharacterName + TEXT("/"); 
+	}
+	FString GetAnimationLevelPath() { 
+		return GetCharacterLevelPath() + AnimationName + TEXT("/"); 
+	}
+	FString GetAnimationSpriteLevelPath() { 
+		return GetAnimationLevelPath() + AnimationName + TEXT("_FlipbookPages/"); 
+	}
+	FString GetFlipbookAssetName() {
+		return CharacterName + "_" + AnimationName;
+	}
 };

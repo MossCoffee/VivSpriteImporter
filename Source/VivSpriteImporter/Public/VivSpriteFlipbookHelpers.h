@@ -11,5 +11,5 @@ class UPaperSprite;
 class FVivSpriteFlipbookHelpers
 {
 public:
-	static bool CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprite>> Objects, const FString& FlipbookName);
+	static bool CreateFlipbook(TArray<TWeakObjectPtr<UPaperSprite>> Objects, const FString& FlipbookName, const FString& FStringFlipbookPath);
 };

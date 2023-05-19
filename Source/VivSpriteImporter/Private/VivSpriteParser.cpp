@@ -21,8 +21,8 @@
 
 VivSpriteParser::VivSpriteParser(FString _FilePath) 
 	: FilePath(_FilePath)
-	, ResourceName()
-	, Subfolder()
+	, AnimationName()
+	, CharacterName()
 	, NumSpriteSheets(0)
 	, imageData() {
 	importVivSprite();
@@ -120,7 +120,8 @@ bool VivSpriteParser::createFlipbooks() {
 
 	if (PaperSprite.IsValid())
 	{
-		return FVivSpriteFlipbookHelpers::CreateFlipbook(PaperSpriteArray, ResourceName);
+		FString PackageName = GetCharacterLevelPath();
+		return FVivSpriteFlipbookHelpers::CreateFlipbook(PaperSpriteArray, GetFlipbookAssetName(), PackageName);
 	}
 	
 	return false;
@@ -128,7 +129,7 @@ bool VivSpriteParser::createFlipbooks() {
 
 TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(FSpriteAssetInitParameters& param, const FString& name)
 {
-	FString PackageName = TEXT("/Game/SpriteSheets/") + Subfolder + TEXT("/") + ResourceName + TEXT("_FlipbookPages/");
+	FString PackageName = GetAnimationSpriteLevelPath();
 	FString TextureName = name;
 	PackageName += TextureName;
 
@@ -249,8 +250,8 @@ UTexture2D* VivSpriteParser::CreateTexture(FString textureName, TSharedPtr<FJson
 		UE_LOG(LogTemp, Error, TEXT("No file found at: %s"), *FileName);
 		return nullptr;
 	}
-	FString PackageName = TEXT("/Game/SpriteSheets/") + Subfolder + TEXT("/");
-	FString FullTextureName = ResourceName + TEXT("_") + textureName;
+	FString PackageName = GetAnimationLevelPath();
+	FString FullTextureName = AnimationName + TEXT("_") + textureName;
 	PackageName += FullTextureName;
 	UPackage* Package = CreatePackage(*PackageName);
 	
@@ -290,12 +291,12 @@ bool VivSpriteParser::ParseJSONFile(FString filePath) {
 	TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(JsonBlob);
 
 	if (FJsonSerializer::Deserialize(reader, jsonObj) && jsonObj.IsValid()) {
-		ResourceName = jsonObj->HasField("name") ? jsonObj->GetStringField("name") : TEXT("default_path");
-		
-		Subfolder = jsonObj->HasField("subfolder") ? jsonObj->GetStringField("subfolder") : ResourceName;
+		AnimationName = AnimationName = jsonObj->HasField("animationName") ? jsonObj->GetStringField("animationName") : TEXT("default_path");
+		CharacterName = CharacterName = jsonObj->HasField("characterName") ? jsonObj->GetStringField("characterName") : AnimationName;
+
 		Sprite2DFileName = jsonObj->HasField("paper2dsprite") ? jsonObj->GetStringField("paper2dSprite") : TEXT("default_path.paper2dSprite");
-		if (Subfolder.Len() == 0) {
-			Subfolder = ResourceName;
+		if (CharacterName.Len() == 0) {
+			CharacterName = AnimationName;
 		}
 		TArray<TSharedPtr<FJsonValue>> imageSettings = jsonObj->GetArrayField("images");
 		for (int32 i = 0; i < imageSettings.Num(); i++) {
