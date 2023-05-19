@@ -114,10 +114,9 @@ bool VivSpriteParser::createFlipbooks() {
 	{
 		Param.Offset = uvs.offset;
 		Param.Dimension = uvs.size;
-		PaperSprite = ConvertTexture2DToUPaperSprite(Param);
+		PaperSprite = ConvertTexture2DToUPaperSprite(Param, uvs.name);
 		PaperSpriteArray.Add(PaperSprite);
 	}
-
 
 	if (PaperSprite.IsValid())
 	{
@@ -127,21 +126,22 @@ bool VivSpriteParser::createFlipbooks() {
 	return false;
 }
 
-TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(FSpriteAssetInitParameters& param)
+TWeakObjectPtr<UPaperSprite> VivSpriteParser::ConvertTexture2DToUPaperSprite(FSpriteAssetInitParameters& param, const FString& name)
 {
-	UPaperSprite* PaperSprite = NewObject<UPaperSprite>();
-	FString PaperSpriteName = TEXT("Frame");
-	FString PackageName = TEXT("/Game/SpriteSheets/") + Subfolder + TEXT("/");
-	FString FullTextureName = ResourceName + TEXT("_") + PaperSpriteName;
-	PackageName += FullTextureName;
+	FString PackageName = TEXT("/Game/SpriteSheets/") + Subfolder + TEXT("/") + ResourceName + TEXT("_FlipbookPages/");
+	FString TextureName = name;
+	PackageName += TextureName;
+
 	UPackage* Package = CreatePackage(*PackageName);
 	Package->FullyLoad();
-	
+
+	FName PaperSpriteName = FName(TextureName);
+	UPaperSprite* PaperSprite = NewObject<UPaperSprite>(Package, PaperSpriteName, RF_Public | RF_Standalone | RF_MarkAsRootSet);
+
+	PaperSprite->PreEditChange(NULL);
 	PaperSprite->InitializeSprite(param);
-
-
-
 	PaperSprite->SetExternalPackage(Package);
+	PaperSprite->PostEditChange();
 
 	FString PackageFileName = FPackageName::LongPackageNameToFilename(PackageName, FPackageName::GetAssetPackageExtension());
 	FSavePackageArgs Args(nullptr, nullptr, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone, SAVE_NoError, true, true, true, FDateTime::Now(), GError);
@@ -327,7 +327,8 @@ bool VivSpriteParser::ParseSprite2D(FString filePath) {
 		for (const auto& frameObj : framesObj->Values)
 		{
 			SpriteSheetUV newFrame;
-			newFrame.name = frameObj.Key;
+			FString noop;
+			FPaths::Split(frameObj.Key, noop, newFrame.name, noop);
 			const auto& frame = frameObj.Value->AsObject()->GetObjectField("frame");
 			newFrame.offset.X = frame->GetIntegerField("x");
 			newFrame.offset.Y = frame->GetIntegerField("y");
@@ -335,7 +336,8 @@ bool VivSpriteParser::ParseSprite2D(FString filePath) {
 			newFrame.size.Y = frame->GetIntegerField("h");
 			uvData.push_back(newFrame);
 		}
-
+		std::sort(uvData.begin(), uvData.end(),
+			[](const SpriteSheetUV& a, const SpriteSheetUV& b) { return a.name < b.name; });
 	}
 	return true;
 }

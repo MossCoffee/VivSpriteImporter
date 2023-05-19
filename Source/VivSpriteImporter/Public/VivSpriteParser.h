@@ -41,7 +41,7 @@ private:
 	UTexture2D* ImportBufferAsTexture2D(const TArray<uint8>& Buffer, UPackage* destination, FString& textureName);
 	bool ParseJSONFile(FString filePath);
 	bool ParseSprite2D(FString filePath);
-	TWeakObjectPtr<UPaperSprite> ConvertTexture2DToUPaperSprite(FSpriteAssetInitParameters& Param);
+	TWeakObjectPtr<UPaperSprite> ConvertTexture2DToUPaperSprite(FSpriteAssetInitParameters& Param, const FString& name);
 
 	bool importVivSprite();
 	UTexture2D* CreateTexture(FString textureName, TSharedPtr<FJsonObject>& textureSettings);
